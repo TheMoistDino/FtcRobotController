@@ -142,22 +142,26 @@ public class HolonomicDrive
         y    = -leftStickY;
         turn = rightStickX;
 
+        // Input variables in new version are power and theta
+        double theta = Math.atan2(y,x);
+        double power = Math.hypot(x,y);
+
+        double sin = Math.sin(theta - Math.PI/4);
+        double cos = Math.cos(theta - Math.PI/4);
+        max = Math.max(Math.abs(sin), Math.abs(cos));
+
         // Combine variables to find power and set the intended power
-        target_leftFront_power  = y + x + turn;
-        target_leftBack_power   = y - x + turn;
-        target_rightFront_power = y - x - turn;
-        target_rightBack_power  = y + x - turn;
+        target_leftFront_power  = (power * cos / max + turn);
+        target_leftBack_power   = (power * sin / max + turn);
+        target_rightFront_power = (power * sin / max - turn);
+        target_rightBack_power  = (power * cos / max - turn);
 
-        max = Math.max(Math.abs(target_leftFront_power), Math.abs(target_rightFront_power));
-        max = Math.max(max, Math.abs(target_leftBack_power));
-        max = Math.max(max, Math.abs(target_rightBack_power));
-
-        if (max > 1.0) // Limit motor's powers to 100%
+        if ((power + Math.abs(turn)) > 1.0) // Limit motor's powers to 100%
         {
-            target_leftFront_power  /= max;
-            target_rightFront_power /= max;
-            target_leftBack_power   /= max;
-            target_rightBack_power  /= max;
+            target_leftFront_power  /= power + Math.abs(turn);
+            target_rightFront_power /= power + Math.abs(turn);
+            target_leftBack_power   /= power + Math.abs(turn);
+            target_rightBack_power  /= power + Math.abs(turn);
         }
 
         // Apply acceleration to the motor powers
