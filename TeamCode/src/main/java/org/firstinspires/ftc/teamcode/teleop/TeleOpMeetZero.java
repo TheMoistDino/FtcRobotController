@@ -49,7 +49,7 @@ public class TeleOpMeetZero extends LinearOpMode
         while(opModeIsActive())
         {
             // For Holonomic Drive
-            holonomicDrive.ActiveDrive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, DRIVETRAIN_SPEED);
+            holonomicDrive.ActiveDriveRO(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, DRIVETRAIN_SPEED);
             //////////////////////
 
             // For Tank Drive
@@ -66,12 +66,12 @@ public class TeleOpMeetZero extends LinearOpMode
 
             if(gamepad1.right_bumper)
             {
-                servoControl.Grab(telemetry);
+                servoControl.Grab();
             }
 
             if(gamepad1.left_bumper)
             {
-                servoControl.Dump(telemetry);
+                servoControl.Dump();
             }
 
             // Buttons to move lift up/down

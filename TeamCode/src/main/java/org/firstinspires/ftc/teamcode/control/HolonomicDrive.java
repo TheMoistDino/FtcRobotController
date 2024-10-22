@@ -1,11 +1,16 @@
 package org.firstinspires.ftc.teamcode.control;
 
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class HolonomicDrive
 {
@@ -19,6 +24,12 @@ public class HolonomicDrive
                                 rightFrontName = "rightFront",
                                 rightBackName  = "rightBack";
     /////
+
+    ///// Create IMU/gyro variables
+    static BNO055IMU imu;
+    Orientation angles = new Orientation();
+    double initYaw;
+    double adjustedYaw;
 
     ///// Create Motion Variables
     double accel = 0.5; // Determine how fast the robot should go to full speed
@@ -51,10 +62,10 @@ public class HolonomicDrive
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
 
     private PIDController pidController;
-    private static double[] drivePIDF = {0,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
+    private static final double[] drivePIDF = {0,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
 
     ///// Create and Define Timer Variables to let the motors have time to run to position
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     /////
 
 
@@ -72,14 +83,27 @@ public class HolonomicDrive
         HolonomicDrive.rightFront = hardwareMap.get(DcMotor.class, rightFrontName);
         HolonomicDrive.rightBack  = hardwareMap.get(DcMotor.class, rightBackName);
 
+        // Instantiate IMU/gyro Objects
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+
+        HolonomicDrive.imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        initYaw = angles.firstAngle;
+
+        // Instantiate Telemetry
+        HolonomicDrive.telemetry = telemetry;
+
         // If the joysticks aren't touched, the robot won't move (set to BRAKE)
         leftFront .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack  .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Instantiate Telemetry
-        MotorControl.telemetry = telemetry;
 
         // Display Message on Screen
         telemetry.addData("initializing", "motors");
@@ -90,15 +114,32 @@ public class HolonomicDrive
         telemetry.addData("reversing", "motors");
     }
 
+    // This method is used to initialize the drive motors' modes
+    public void InitAuto()
+    {
+        //Stops and resets the encoder on the motors
+        leftFront .setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack  .setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack .setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-    // This method is used to set the drive motor's powers in TeleOp
-    public void ActiveDrive(double leftStickX, double leftStickY, double rightStickX, double DRIVETRAIN_SPEED)
+        //Sets mode to run without the encoder (to maximize motor efficiency/power)
+        leftFront .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack  .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        telemetry.addData("drive motors' mode set","");
+    }
+
+    // This method is used for robot-oriented driving in TeleOp
+    public void ActiveDriveRO(double leftStickX, double leftStickY, double rightStickX, double DRIVETRAIN_SPEED)
     {
         double max; // Limit motor's powers to 100%
 
-        // Cool vector math to calculate power to wheels
-        y    = -leftStickY;
+        // Cool vector math to calculate power to the drive motors
         x    = leftStickX;
+        y    = -leftStickY;
         turn = rightStickX;
 
         // Combine variables to find power and set the intended power
@@ -136,6 +177,61 @@ public class HolonomicDrive
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBack_power, rightBack_power);
     }
 
+    // This method is used for field-oriented driving in TeleOp
+    public void ActiveDriveFO(double leftStickX, double leftStickY, double rightStickX, double DRIVETRAIN_SPEED)
+    {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        adjustedYaw = angles.firstAngle - initYaw;
+
+        // toggle field/normal
+        double zeroedYaw = -initYaw + angles.firstAngle;
+
+        // Cool vector math to calculate power to the drive motors
+        x    = leftStickX;
+        y    = -leftStickY;
+        turn = rightStickX;
+
+        double theta = Math.atan2(y,x)*(180/Math.PI); // aka angle
+
+        double realTheta = (360 - zeroedYaw) + theta;
+
+        double power = Math.hypot(x,y);
+
+        double sin = Math.sin((realTheta * (Math.PI / 180)) - (Math.PI / 4));
+        double cos = Math.cos((realTheta * (Math.PI / 180)) - (Math.PI / 4));
+        double maxSinCos = Math.max(Math.abs(sin), Math.abs(cos));
+
+        // Combine variables to find power and set the intended power
+        target_leftFront_power  = (power * cos / maxSinCos + turn);
+        target_leftBack_power   = (power * sin / maxSinCos + turn);
+        target_rightFront_power = (power * sin / maxSinCos - turn);
+        target_rightBack_power  = (power * cos / maxSinCos - turn);
+
+        if ((power + Math.abs(turn)) > 1.0) // Limit motor's powers to 100%
+        {
+            target_leftFront_power  /= power + Math.abs(turn);
+            target_rightFront_power /= power + Math.abs(turn);
+            target_leftBack_power   /= power + Math.abs(turn);
+            target_rightBack_power  /= power + Math.abs(turn);
+        }
+
+        // Apply acceleration to the motor powers
+        leftFront_power  += accel * (target_leftFront_power  - leftFront_power);
+        leftBack_power   += accel * (target_leftBack_power   - leftBack_power);
+        rightFront_power += accel * (target_rightFront_power - rightFront_power);
+        rightBack_power  += accel * (target_rightBack_power  - rightBack_power);
+
+        // Set motor powers to desired values
+        leftFront .setPower(leftFront_power  * DRIVETRAIN_SPEED);
+        leftBack  .setPower(leftBack_power   * DRIVETRAIN_SPEED);
+        rightFront.setPower(rightFront_power * DRIVETRAIN_SPEED);
+        rightBack .setPower(rightBack_power  * DRIVETRAIN_SPEED);
+
+        // Display motor power
+        telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFront_power, rightFront_power);
+        telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBack_power, rightBack_power);
+    }
+
     // This method is used to drive the robot forward some number of inches forward in Auto
     public void ForwardDrive(double inchesForward, double maxPower, double timeoutS)
     {
@@ -145,16 +241,16 @@ public class HolonomicDrive
         rightBack .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Tells the motors the target position
-        leftFront.setTargetPosition((leftFront.getCurrentPosition() + (int) (-inchesForward * COUNTS_PER_INCH)));
-        leftBack.setTargetPosition((leftBack.getCurrentPosition() + (int) (-inchesForward * COUNTS_PER_INCH)));
-        rightFront.setTargetPosition((rightFront.getCurrentPosition() + (int) (-inchesForward * COUNTS_PER_INCH)));
-        rightBack.setTargetPosition((rightBack.getCurrentPosition() + (int) (-inchesForward * COUNTS_PER_INCH)));
+        leftFront .setTargetPosition((leftFront .getCurrentPosition() + (int) (inchesForward * COUNTS_PER_INCH)));
+        leftBack  .setTargetPosition((leftBack  .getCurrentPosition() + (int) (inchesForward * COUNTS_PER_INCH)));
+        rightFront.setTargetPosition((rightFront.getCurrentPosition() + (int) (inchesForward * COUNTS_PER_INCH)));
+        rightBack .setTargetPosition((rightBack .getCurrentPosition() + (int) (inchesForward * COUNTS_PER_INCH)));
 
         //Sets the mode of the motors to run to the positions
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftFront .setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack  .setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack .setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
         // Resets timer
@@ -172,16 +268,16 @@ public class HolonomicDrive
             telemetry.update();
         }
         //After it runs to the position it stops
-        leftFront.setPower(0);
-        leftBack.setPower(0);
+        leftFront .setPower(0);
+        leftBack  .setPower(0);
         rightFront.setPower(0);
-        rightBack.setPower(0);
+        rightBack .setPower(0);
 
         //Sets mode back to run without the encoder
-        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFront .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack  .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void ForwardDrivePID(double inchesForward, double timeoutS)
@@ -243,23 +339,5 @@ public class HolonomicDrive
 
         telemetry.addData("finished driving","");
         telemetry.update();
-    }
-
-    // This method is used to initialize the drive motors' modes
-    public void InitAuto()
-    {
-        //Stops and resets the encoder on the motors
-        leftFront .setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack  .setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack .setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //Sets mode to run without the encoder (to maximize motor efficiency/power)
-        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        telemetry.addData("drive motors' mode set","");
     }
 }

@@ -19,15 +19,20 @@ public class ServoControl
 
     ///// Create and Define Motion Variables
     static boolean isGrab, isDumped;
-    static final double closeClawPos = 0.6, // Change to closed claw position
-                        openClawPos  = 0.4, // Change to open claw position
-                        notDumpedPos = 1.0, // Change to not dumped position
+    static final double closeClawPos = 0.55, // Change to closed claw position
+                        openClawPos  = 0.1, // Change to open claw position
+                        notDumpedPos = 0.9, // Change to not dumped position
                         dumpedPos = 0.0; // Change to dumped position
     /////
 
     ///// Create and Define Timer Variables to let the servos have time to run to position
-    private ElapsedTime runtime = new ElapsedTime();
-    double timeout = 150;
+    private final ElapsedTime runtime = new ElapsedTime();
+    double timeout = 250;
+    /////
+
+
+    ///// Extra variables
+    static Telemetry telemetry;
     /////
 
 
@@ -37,6 +42,8 @@ public class ServoControl
         // Instantiate Servo Objects
         ServoControl.claw = hardwareMap.get(Servo.class, clawName);
         ServoControl.bucket = hardwareMap.get(Servo.class, bucketName);
+        // Instantiate Telemetry
+        ServoControl.telemetry = telemetry;
 
         ///// Start the claw in the "open" position
         isGrab = false;
@@ -46,11 +53,10 @@ public class ServoControl
 
         // Display Message on Screen
         telemetry.addData("initializing", "servos");
-        telemetry.update();
     }
 
     // This method is used to open/close the claw servo
-    public void Grab(Telemetry telemetry)
+    public void Grab()
     {
         // Restart timer
         runtime.reset();
@@ -70,7 +76,7 @@ public class ServoControl
     }
 
     // This method is used to dump the bucket servo
-    public void Dump(Telemetry telemetry)
+    public void Dump()
     {
         // Restart timer
         runtime.reset();
@@ -87,7 +93,5 @@ public class ServoControl
         }
         telemetry.addData("isDumped", isDumped);
         telemetry.update();
-
-
     }
 }

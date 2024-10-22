@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class MotorControl
 {
     ///// Create Motor Variables
-    static DcMotor lift, arm;
+    public static DcMotor lift, arm;
     /////
 
     ///// Name of Control Motors on Driver Hub
@@ -32,8 +32,8 @@ public class MotorControl
 
     ///// Create PIDF Variables
     private PIDController pidController;
-    private static double[] armPIDF = {0,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
-    private static double[] liftPIDF = {0,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
+    private static final double[] armPIDF = {0,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
+    private static final double[] liftPIDF = {0,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
     /////
 
     ///// Extra variables
@@ -46,6 +46,8 @@ public class MotorControl
         // Instantiate Motor Objects
         MotorControl.lift = hardwareMap.get(DcMotor.class, liftName);
         MotorControl.arm  = hardwareMap.get(DcMotor.class, armName);
+        // Instantiate Telemetry
+        MotorControl.telemetry = telemetry;
 
         // If the joysticks aren't touched, the robot won't move (set to BRAKE)
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -55,17 +57,14 @@ public class MotorControl
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm .setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        // Instantiate Telemetry
-        MotorControl.telemetry = telemetry;
-
         // Display Message on Screen
         telemetry.addData("initializing", "motors");
-        telemetry.update();
     }
 
     // This method is used to lock the position of the lift
     public void LockLift()
     {
+        liftPower = 0;
         currentLiftPos = lift.getCurrentPosition();
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setPower(max_liftPower);
@@ -86,12 +85,12 @@ public class MotorControl
         lift.setPower(power);
 
         telemetry.addData("lift pos", currentLiftPos);
-        telemetry.update();
     }
 
     // This method is used to lock the position of the arm
     public void LockArm()
     {
+        armPower = 0;
         currentArmPos = arm.getCurrentPosition();
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setPower(max_armPower);
@@ -110,7 +109,6 @@ public class MotorControl
         arm.setPower(power);
 
         telemetry.addData("arm pos", currentArmPos);
-        telemetry.update();
     }
 
     // This method is used to move the lift

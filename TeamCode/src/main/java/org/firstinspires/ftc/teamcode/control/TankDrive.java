@@ -43,6 +43,8 @@ public class TankDrive
         TankDrive.leftBack   = hardwareMap.get(DcMotor.class, leftBackName);
         TankDrive.rightFront = hardwareMap.get(DcMotor.class, rightFrontName);
         TankDrive.rightBack  = hardwareMap.get(DcMotor.class, rightBackName);
+        // Instantiate Telemetry
+        TankDrive.telemetry = telemetry;
 
         // If the joysticks aren't touched, the robot won't move (set to BRAKE)
         leftFront .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -55,13 +57,11 @@ public class TankDrive
 
         // Display Message on Screen
         telemetry.addData("initializing", "motors");
-        telemetry.update();
 
         // Reverse Motor Directions for Positive Values
         leftBack .setDirection(DcMotor.Direction.REVERSE);
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         telemetry.addData("reversing", "motors");
-        telemetry.update();
     }
 
     // This method is used to set the drive motor's powers
@@ -98,6 +98,7 @@ public class TankDrive
         leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
 
+        telemetry.addData("drive motors' mode set","");
+    }
 }
