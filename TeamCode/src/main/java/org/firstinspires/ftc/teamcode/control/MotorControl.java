@@ -24,8 +24,8 @@ public class MotorControl
     double armAccel = 0.5;
     double armPower = 0.0;
     double max_armPower = 0.5;
-    int currentLiftPos;
-    int currentArmPos;
+    int currentLiftPos = 0;
+    int currentArmPos = 0;
     public enum LiftDirection {up, down}
     public enum ArmDirection {up, down}
     /////
@@ -66,6 +66,7 @@ public class MotorControl
     {
         liftPower = 0;
         currentLiftPos = lift.getCurrentPosition();
+        lift.setTargetPosition(currentLiftPos);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setPower(max_liftPower);
     }
@@ -92,6 +93,7 @@ public class MotorControl
     {
         armPower = 0;
         currentArmPos = arm.getCurrentPosition();
+        arm.setTargetPosition(currentArmPos);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setPower(max_armPower);
     }
