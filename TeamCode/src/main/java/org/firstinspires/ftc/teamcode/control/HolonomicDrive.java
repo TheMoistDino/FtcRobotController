@@ -27,7 +27,7 @@ public class HolonomicDrive
 
     ///// Create IMU/gyro variables
     static BNO055IMU imu;
-    Orientation angles = new Orientation();
+    Orientation angles;
     double initYaw;
     double adjustedYaw;
 
@@ -93,7 +93,7 @@ public class HolonomicDrive
         HolonomicDrive.imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        // angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
         initYaw = angles.firstAngle;
 
         // Instantiate Telemetry
@@ -133,7 +133,7 @@ public class HolonomicDrive
     }
 
     // This method is used for robot-oriented driving in TeleOp
-    public void ActiveDriveRO(double leftStickX, double leftStickY, double rightStickX, double DRIVETRAIN_SPEED)
+    public void ActiveDriveRO(double leftStickX, double leftStickY, double rightStickX, double SPEED_MULTIPLIER)
     {
         double max; // Limit motor's powers to 100%
 
@@ -171,10 +171,10 @@ public class HolonomicDrive
         rightBack_power  += accel * (target_rightBack_power  - rightBack_power);
 
         // Set motor powers to desired values
-        leftFront .setPower(leftFront_power  * DRIVETRAIN_SPEED);
-        leftBack  .setPower(leftBack_power   * DRIVETRAIN_SPEED);
-        rightFront.setPower(rightFront_power * DRIVETRAIN_SPEED);
-        rightBack .setPower(rightBack_power  * DRIVETRAIN_SPEED);
+        leftFront .setPower(leftFront_power  * SPEED_MULTIPLIER);
+        leftBack  .setPower(leftBack_power   * SPEED_MULTIPLIER);
+        rightFront.setPower(rightFront_power * SPEED_MULTIPLIER);
+        rightBack .setPower(rightBack_power  * SPEED_MULTIPLIER);
 
         // Display motor power
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFront_power, rightFront_power);
@@ -182,9 +182,8 @@ public class HolonomicDrive
     }
 
     // This method is used for field-oriented driving in TeleOp
-    public void ActiveDriveFO(double leftStickX, double leftStickY, double rightStickX, double DRIVETRAIN_SPEED)
+    public void ActiveDriveFO(double leftStickX, double leftStickY, double rightStickX, double SPEED_MULTIPLIER)
     {
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         adjustedYaw = angles.firstAngle - initYaw;
 
         // toggle field/normal
@@ -195,14 +194,14 @@ public class HolonomicDrive
         y    = -leftStickY;
         turn = rightStickX;
 
-        double theta = Math.atan2(y,x)*(180/Math.PI); // aka angle
+        double theta = Math.atan2(y,x); // aka angle
 
-        double realTheta = (360 - zeroedYaw) + theta;
+        double realTheta = ((2*Math.PI) - zeroedYaw) + theta;
 
         double power = Math.hypot(x,y);
 
-        double sin = Math.sin((realTheta * (Math.PI / 180)) - (Math.PI / 4));
-        double cos = Math.cos((realTheta * (Math.PI / 180)) - (Math.PI / 4));
+        double sin = Math.sin((realTheta) - (Math.PI / 4));
+        double cos = Math.cos((realTheta) - (Math.PI / 4));
         double maxSinCos = Math.max(Math.abs(sin), Math.abs(cos));
 
         // Combine variables to find power and set the intended power
@@ -226,10 +225,10 @@ public class HolonomicDrive
         rightBack_power  += accel * (target_rightBack_power  - rightBack_power);
 
         // Set motor powers to desired values
-        leftFront .setPower(leftFront_power  * DRIVETRAIN_SPEED);
-        leftBack  .setPower(leftBack_power   * DRIVETRAIN_SPEED);
-        rightFront.setPower(rightFront_power * DRIVETRAIN_SPEED);
-        rightBack .setPower(rightBack_power  * DRIVETRAIN_SPEED);
+        leftFront .setPower(leftFront_power  * SPEED_MULTIPLIER);
+        leftBack  .setPower(leftBack_power   * SPEED_MULTIPLIER);
+        rightFront.setPower(rightFront_power * SPEED_MULTIPLIER);
+        rightBack .setPower(rightBack_power  * SPEED_MULTIPLIER);
 
         // Display motor power
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFront_power, rightFront_power);

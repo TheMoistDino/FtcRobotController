@@ -24,8 +24,10 @@ public class MotorControl
     double armAccel = 0.5;
     double armPower = 0.0;
     double max_armPower = 0.5;
-    int currentLiftPos = 0;
-    int currentArmPos = 0;
+    public int currentLiftPos;
+    public int currentArmPos;
+    public int minLiftPos = 0;
+    public int maxLiftPos = 0;
     public enum LiftDirection {up, down}
     public enum ArmDirection {up, down}
     /////
@@ -69,6 +71,21 @@ public class MotorControl
         lift.setTargetPosition(currentLiftPos);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setPower(max_liftPower);
+    }
+
+    public void StopAndReturnLift()
+    {
+        // Calculate the distance to each limit
+        int distanceToMin = Math.abs(currentLiftPos - minLiftPos);
+        int distanceToMax = Math.abs(currentLiftPos - maxLiftPos);
+
+        // Determine the closest limit
+        int targetPosition = (distanceToMin < distanceToMax) ? minLiftPos : maxLiftPos;
+
+        // Move the lift to the closest limit
+        lift.setTargetPosition(targetPosition);
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.setPower(max_liftPower); // Assuming you have a max_liftPower variable
     }
 
     public void LockLiftPID()
