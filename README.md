@@ -20,6 +20,25 @@ If you are an Android Studio programmer, there are several ways to download this
 
 Once you have downloaded and uncompressed (if needed) your folder, you can use Android Studio to import the folder  ("Import project (Eclipse ADT, Gradle, etc.)").
 
+## Change Log
+
+### Merged branch "test-002" into "test-001" (10/25, 21:00)
+#### MotorControl.java
+* Re-ordered variable initialization
+* Rewrote "MoveArm" and "MoveLift" to be cleaner
+* Created a "LiftToPosition" method for Auto and TeleOp (not implemented)
+
+### New branch: test-002 (10/25, 19:00)
+#### TeleOp.java
+* Renamed TeleOpMeetZero to TeleOp
+* Renamed SPEED_MULTIPLIER variables in TeleOp
+* Added an operating range for the lift (in MotorControl, TeleOp)
+#### HolonomicDrive.java
+* Added a driving orientation mode button
+* Changed IMU units from DEGREES to RADIANS
+#### SampleTeleOp.java
+* Disabled SampleTeleOp from showing in the Driver Hub menu
+
 ## Getting Help
 ### User Documentation and Tutorials
 *FIRST* maintains online documentation with information and tutorials on how to use the *FIRST* Tech Challenge software and robot control system.  You can access this documentation using the following link:
@@ -44,13 +63,3 @@ This project contains a large selection of Sample OpModes (robot code examples) 
 Samples Folder: &nbsp;&nbsp; [/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples](FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples)
 
 The readme.md file located in the [/TeamCode/src/main/java/org/firstinspires/ftc/teamcode](TeamCode/src/main/java/org/firstinspires/ftc/teamcode) folder contains an explanation of the sample naming convention, and instructions on how to copy them to your own project space.
-
-# Change Log
-
-## New branch: test-002
-* Renamed TeleOpMeetZero to TeleOp
-* Renamed SPEED_MULTIPLIER variables in TeleOp
-* Added an operating range for the lift (in MotorControl, TeleOp)
-* Added a driving orientation mode button
-* Disabled SampleTeleOp from showing in the Driver Hub menu
-* Changed IMU units from DEGREES to RADIANS

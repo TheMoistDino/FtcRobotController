@@ -3,8 +3,12 @@ package org.firstinspires.ftc.teamcode.control;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MotorControl
 {
@@ -18,17 +22,22 @@ public class MotorControl
     /////
 
     ///// Create and Define Motion Variables
+    // Lift Variables
     double liftAccel = 0.5;
     double liftPower = 0.0;
     double max_liftPower = 1.0;
-    double armAccel = 0.5;
-    double armPower = 0.0;
-    double max_armPower = 0.5;
     public int currentLiftPos;
-    public int currentArmPos;
     public int minLiftPos = 0;
     public int maxLiftPos = 0;
     public enum LiftDirection {up, down}
+    public enum LiftHeight {high_basket, low_basket, high_chamber, low_chamber}
+    int high_basket_pos = 1000, low_basket_pos = 600,
+        high_chamber_pos = 700, low_chamber_pos = 400;
+    // Arm Variables
+    double armAccel = 0.5;
+    double armPower = 0.0;
+    double max_armPower = 0.5;
+    public int currentArmPos;
     public enum ArmDirection {up, down}
     /////
 
@@ -36,6 +45,10 @@ public class MotorControl
     private PIDController pidController;
     private static final double[] armPIDF = {0,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
     private static final double[] liftPIDF = {0,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
+    /////
+
+    ///// Create and Define Timer Variables to let the motors have time to run to position
+    private final ElapsedTime runtime = new ElapsedTime();
     /////
 
     ///// Extra variables
@@ -135,13 +148,14 @@ public class MotorControl
     {
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        if(liftDirection == LiftDirection.up)
+        switch (liftDirection)
         {
-            liftPower += liftAccel * (max_liftPower - liftPower);
-        }
-        else
-        {
-            liftPower -= liftAccel * (max_liftPower - liftPower);
+            case up:
+                liftPower += liftAccel * (max_liftPower - liftPower);
+                break;
+            case down:
+                liftPower -= liftAccel * (max_liftPower - liftPower);
+                break;
         }
 
         lift.setPower(liftPower * LIFT_SPEED);
@@ -154,17 +168,67 @@ public class MotorControl
     {
         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        if(armDirection == ArmDirection.up)
+        switch (armDirection)
         {
-            armPower += armAccel * (max_armPower - armPower);
-        }
-        else
-        {
-            armPower -= armAccel * (max_armPower - armPower);
+            case up:
+                armPower += armAccel * (max_armPower - armPower);
+                break;
+            case down:
+                armPower -= armAccel * (max_armPower - armPower);
+                break;
         }
 
         arm.setPower(armPower * LIFT_SPEED);
 
         currentArmPos = arm.getCurrentPosition();
+    }
+
+    // This method is used to make the lift go to a specified position
+    public void LiftToPosition(LiftHeight liftHeight, double timeoutSeconds)
+    {
+        int target;
+        // Initialize the map (ideally, do this once during initialization)
+        Map<LiftHeight, Integer> liftPositions = new HashMap<>();
+        liftPositions.put(LiftHeight.high_basket, high_basket_pos);
+        liftPositions.put(LiftHeight.low_basket, low_basket_pos);
+        liftPositions.put(LiftHeight.high_chamber, high_chamber_pos);
+        liftPositions.put(LiftHeight.low_chamber, low_chamber_pos);
+
+        // Get the target position
+        target = liftPositions.getOrDefault(liftHeight, 0);
+
+        // Initialize the lift motor to the correct mode (to maximize power)
+        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // Resets timer
+        runtime.reset();
+
+        // Gets the position of the lift motor
+        currentLiftPos = lift.getCurrentPosition();
+
+        while ((runtime.seconds() < timeoutSeconds) && (lift.isBusy()))
+        {
+            // Sets controller PID to the variables in the array
+            pidController.setPID(liftPIDF[0],liftPIDF[1],liftPIDF[2]);
+
+            // Gets position of lift motor
+            currentLiftPos = lift.getCurrentPosition();
+
+            // Calculates the power of the lift motor
+            double liftPID = pidController.calculate(currentLiftPos, target);
+            double ff = currentLiftPos * liftPIDF[3];
+
+            // Sets the power of the lift motor
+            double power = liftPID + ff;
+            lift.setPower(power);
+
+            // Update current state to telemetry
+            telemetry.addData("currently running","");
+            telemetry.update();
+        }
+
+        // After the lift runs to position, it stops
+        lift.setPower(0);
+        telemetry.addData("final position", lift.getCurrentPosition());
+        telemetry.update();
     }
 }
