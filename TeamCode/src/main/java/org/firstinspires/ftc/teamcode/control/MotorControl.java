@@ -36,7 +36,7 @@ public class MotorControl
     // Arm Variables
     double armAccel = 0.5;
     double armPower = 0.0;
-    double max_armPower = 0.5;
+    double max_armPower;
     public int currentArmPos;
     public enum ArmDirection {up, down}
     /////
@@ -93,7 +93,7 @@ public class MotorControl
         int distanceToMax = Math.abs(currentLiftPos - maxLiftPos);
 
         // Determine the closest limit
-        int targetPosition = (distanceToMin < distanceToMax) ? minLiftPos : maxLiftPos;
+        int targetPosition = (distanceToMin < distanceToMax) ? (minLiftPos + 50) : (maxLiftPos - 50);
 
         // Move the lift to the closest limit
         lift.setTargetPosition(targetPosition);
@@ -171,9 +171,11 @@ public class MotorControl
         switch (armDirection)
         {
             case up:
+                max_armPower = 0.3;
                 armPower += armAccel * (max_armPower - armPower);
                 break;
             case down:
+                max_armPower = 0.5;
                 armPower -= armAccel * (max_armPower - armPower);
                 break;
         }

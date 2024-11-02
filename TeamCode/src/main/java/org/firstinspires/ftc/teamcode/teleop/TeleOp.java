@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.control.HolonomicDrive;
 import org.firstinspires.ftc.teamcode.control.MotorControl;
 import org.firstinspires.ftc.teamcode.control.ServoControl;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Meet 0 TeleOp", group = "TeleOp")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Meet 1 TeleOp", group = "TeleOp")
 public class TeleOp extends LinearOpMode
 {
     // Variables for Method Calling
@@ -52,11 +52,14 @@ public class TeleOp extends LinearOpMode
         {
             // For Holonomic Drive
                 // Call the appropriate driving method based on the current mode
-            if (isFieldOriented) {
+            if (isFieldOriented)
+            {
                 // Call your field-oriented driving method
                 holonomicDrive.ActiveDriveFO
                         (gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, DRIVETRAIN_SPEED_MULTIPLIER);
-            } else {
+            }
+            else
+            {
                 // Call your robot-oriented driving method
                 holonomicDrive.ActiveDriveRO
                         (gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, DRIVETRAIN_SPEED_MULTIPLIER);
@@ -85,31 +88,35 @@ public class TeleOp extends LinearOpMode
                 servoControl.Dump();
             }
 
-            // Check if the lift is trying to move beyond the limits
-            if ((gamepad1.right_trigger != 0 && (motorControl.currentLiftPos >= motorControl.maxLiftPos))
-               || (gamepad1.left_trigger != 0 && (motorControl.currentLiftPos <= motorControl.minLiftPos)))
+            // Determine the desired lift direction based on trigger input
+            MotorControl.LiftDirection liftDirection = null;
+            if (gamepad1.right_trigger != 0 && motorControl.currentLiftPos < motorControl.maxLiftPos)
             {
-                // Stop the lift from moving further up or down
+                liftDirection = MotorControl.LiftDirection.up;
+            }
+            else if (gamepad1.left_trigger != 0 && motorControl.currentLiftPos > motorControl.minLiftPos)
+            {
+                liftDirection = MotorControl.LiftDirection.down;
+            }
+
+            // Control the lift based on the determined direction
+            if (liftDirection == MotorControl.LiftDirection.up)
+            {
+                motorControl.MoveLift(liftDirection, LIFT_SPEED_MULTIPLIER);
+            }
+            else if (liftDirection == MotorControl.LiftDirection.down)
+            {
+                motorControl.MoveLift(liftDirection, LIFT_SPEED_MULTIPLIER);
+            }
+            else
+            {
+                motorControl.LockLift(); // Brake lift when no direction is specified
+            }
+
+            // If the lift is beyond the set min or max positions, return the lift to the nearest limit
+            if (motorControl.currentLiftPos < motorControl.minLiftPos || motorControl.currentLiftPos > motorControl.maxLiftPos)
+            {
                 motorControl.StopAndReturnLift();
-            } else if (((motorControl.currentLiftPos >= motorControl.maxLiftPos) && gamepad1.right_trigger == 0)
-                    || ((motorControl.currentLiftPos <= motorControl.minLiftPos) && gamepad1.left_trigger == 0))
-            {
-                // Stop the lift from moving further up or down
-                motorControl.StopAndReturnLift();
-            } else
-            {
-                // Allow normal lift movement
-                if (gamepad1.right_trigger != 0)
-                {
-                    motorControl.MoveLift(MotorControl.LiftDirection.up, LIFT_SPEED_MULTIPLIER);
-                } else if (gamepad1.left_trigger != 0)
-                {
-                    motorControl.MoveLift(MotorControl.LiftDirection.down, LIFT_SPEED_MULTIPLIER);
-                } else
-                {
-                    // Brake lift
-                    motorControl.LockLift();
-                }
             }
 
             // Buttons to move arm up/down

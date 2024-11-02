@@ -22,6 +22,18 @@ Once you have downloaded and uncompressed (if needed) your folder, you can use A
 
 ## Change Log
 
+### Bug Fixes (11/1, 20:00)
+#### TeleOp.java
+* Updated Display Name to "Meet 1 TeleOp"
+* Fixed Lift controls
+#### MotorControl.java
+* Adjusted max_armPower values & inputs
+* Adjusted StopAndReturnLift method to make lift re-enter limits
+#### ServoControl.java
+* Adjusted closed and open claw positions
+#### MecanumDrive.java
+* Adjusted initialization functions
+
 ### Merged branch "test-002" into "test-001" (10/25, 21:00)
 #### MotorControl.java
 * Re-ordered variable initialization
