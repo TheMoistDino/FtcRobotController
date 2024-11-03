@@ -20,7 +20,36 @@ If you are an Android Studio programmer, there are several ways to download this
 
 Once you have downloaded and uncompressed (if needed) your folder, you can use Android Studio to import the folder  ("Import project (Eclipse ADT, Gradle, etc.)").
 
+## Robot Controls
+### Gamepad 1
+Left and Right Joysticks = Movement  (left for translational, right for rotational)
+
+Right Bumper = Intake Claw
+Left Bumper = Bucket
+Right Trigger = Lift Up
+Left Trigger = Lift Down
+
+D-Pad Up = Arm Forward
+D-Pad Down = Arm Backward
+
+### Gamepad 2
+Start Button = Toggle Robot-Oriented to Field-Oriented
+
+Right Bumper = Slow Driving
+Left Bumper = Slow Lift & Arm
+
 ## Change Log
+### Included Gamepad controls + Servo Optimizations (11/3, 21:00)
+#### ServoControl.java
+* Changed Servo types to ServoImplEx
+  * Improved control of servos to prevent movement between AUTO and TELEOP periods
+  * Created StartServos and StopServos methods
+* Increased range of servo's PWM range to utilize the full 270 degrees of the heavy-duty servos
+#### AutoMeetOne.java and AutoMeetZero.java
+* Disabled AutoMeetZero
+* Created AutoMeetOne
+#### TeleOp.java
+* Added respective StartServos and StopServos methods
 
 ### Bug Fixes (11/1, 20:00)
 #### TeleOp.java

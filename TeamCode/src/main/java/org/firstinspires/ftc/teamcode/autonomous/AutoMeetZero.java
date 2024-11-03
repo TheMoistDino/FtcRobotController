@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.control.HolonomicDrive;
 
-@Autonomous(name = "Meet 0 Auto", group = "TeleOp")
+@Autonomous(name = "Meet 0 Auto", group = "Auto")
 public class AutoMeetZero extends LinearOpMode
 {
     // Variables used for Method Calling

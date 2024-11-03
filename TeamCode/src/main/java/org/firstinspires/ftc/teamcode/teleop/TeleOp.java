@@ -48,6 +48,8 @@ public class TeleOp extends LinearOpMode
         // Wait for the play button to be pressed
         waitForStart();
 
+        servoControl.StartServos();
+
         while(opModeIsActive())
         {
             // For Holonomic Drive

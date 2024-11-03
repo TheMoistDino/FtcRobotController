@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.control;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -9,12 +10,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class ServoControl
 {
     ///// Create Servo Variables
-    static Servo claw, bucket;
+    static ServoImplEx claw, bucket;
+    static ServoImplEx slide;
     /////
 
     ///// Name of Servos on Driver Hub
     private static final String clawName = "claw",
                                 bucketName = "bucket";
+    private static final String slideName = "slide";
     /////
 
     ///// Create and Define Motion Variables
@@ -40,19 +43,54 @@ public class ServoControl
     public ServoControl(HardwareMap hardwareMap, Telemetry telemetry)
     {
         // Instantiate Servo Objects
-        ServoControl.claw = hardwareMap.get(Servo.class, clawName);
-        ServoControl.bucket = hardwareMap.get(Servo.class, bucketName);
+        ServoControl.claw = hardwareMap.get(ServoImplEx.class, clawName);
+        ServoControl.bucket = hardwareMap.get(ServoImplEx.class, bucketName);
+
+        // ServoControl.slide = hardwareMap.get(ServoImplEx.class, slideName);
+
+        // Increase max range of slide servo
+        // slide.setPwmRange(new PwmControl.PwmRange(500, 2500));
+
+        // Disable servo power by default
+        claw.setPwmDisable();
+        bucket.setPwmDisable();
+        // slide.setPwmDisable();
+
         // Instantiate Telemetry
         ServoControl.telemetry = telemetry;
 
-        ///// Start the claw in the "open" position
+        // Display Message on Screen
+        telemetry.addData("initializing", "servos");
+    }
+
+    // This method is used to "turn on" the servos (help prevent movement between AUTO and TELEOP periods)
+    public void StartServos()
+    {
+        // Enable servo power
+        claw.setPwmEnable();
+        bucket.setPwmEnable();
+        // slide.setPwmEnable();
+
+        // Start the claw and bucket in initial positions
         isGrab = false;
         isDumped = false;
         claw.setPosition(openClawPos);
         bucket.setPosition(notDumpedPos);
 
         // Display Message on Screen
-        telemetry.addData("initializing", "servos");
+        telemetry.addData("starting", "servos");
+    }
+
+    // This method is used to "turn off" the servos (help prevent movement between AUTO and TELEOP periods)
+    public void StopServos()
+    {
+        // Disable servo power
+        claw.setPwmDisable();
+        bucket.setPwmDisable();
+        // slide.setPwmDisable();
+
+        // Display Message on Screen
+        telemetry.addData("stopping", "servos");
     }
 
     // This method is used to open/close the claw servo
