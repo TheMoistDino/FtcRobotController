@@ -22,23 +22,23 @@ Once you have downloaded and uncompressed (if needed) your folder, you can use A
 
 ## Robot Controls
 ### Gamepad 1
-Left and Right Joysticks = Movement  (left for translational, right for rotational)
-
-Right Bumper = Intake Claw
-Left Bumper = Bucket
-Right Trigger = Lift Up
-Left Trigger = Lift Down
-
-D-Pad Up = Arm Forward
-D-Pad Down = Arm Backward
+- Left and Right Joysticks = Movement  (left for translational, right for rotational)
+- Right Bumper = Intake Claw
+- Left Bumper = Bucket
+- Right Trigger = Lift Up
+- Left Trigger = Lift Down
+- D-Pad Up = Arm Forward
+- D-Pad Down = Arm Backward
 
 ### Gamepad 2
-Start Button = Toggle Robot-Oriented to Field-Oriented
-
-Right Bumper = Slow Driving
-Left Bumper = Slow Lift & Arm
+- Start Button = Toggle Robot-Oriented to Field-Oriented
+- Right Bumper = Slow Driving
+- Left Bumper = Slow Lift & Arm
 
 ## Change Log
+### Added cameraColorTuner.java
+* Performs color masking to specific ranges
+
 ### Included Gamepad controls + Servo Optimizations (11/3, 21:00)
 #### ServoControl.java
 * Changed Servo types to ServoImplEx
