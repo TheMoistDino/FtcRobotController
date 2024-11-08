@@ -23,7 +23,7 @@ public class motorTuner extends OpMode {
         controller = new PIDController(kP,kI,kD);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        motor = hardwareMap.get(DcMotorEx.class, "lift");
+        motor = hardwareMap.get(DcMotorEx.class, "arm");
     }
 
     @Override

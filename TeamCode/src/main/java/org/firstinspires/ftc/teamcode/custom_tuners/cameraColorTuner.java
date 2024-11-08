@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -23,6 +24,7 @@ import org.opencv.core.Scalar;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+@Disabled
 @Config
 @TeleOp(name="Camera Color Tuner", group="Test")
 public class cameraColorTuner extends LinearOpMode

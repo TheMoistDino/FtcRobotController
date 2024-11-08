@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.control.HolonomicDrive;
 
+@Disabled
 @Autonomous(name = "Meet 0 Auto", group = "Auto")
 public class AutoMeetZero extends LinearOpMode
 {

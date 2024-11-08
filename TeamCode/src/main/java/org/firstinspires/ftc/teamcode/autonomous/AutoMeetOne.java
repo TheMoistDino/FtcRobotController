@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.control.HolonomicDrive;
 import org.firstinspires.ftc.teamcode.control.MotorControl;
 import org.firstinspires.ftc.teamcode.control.ServoControl;
 
-@Autonomous(name = "Meet 1 Auto", group = "Auto")
+@Autonomous(name = "Meet 1 Auto", group = "Auto", preselectTeleOp = "Meet 1 TeleOp")
 public class AutoMeetOne extends LinearOpMode
 {
     // Variables used for Method Calling
