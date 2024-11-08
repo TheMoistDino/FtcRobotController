@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 @TeleOp(name = "Servo Tuner", group = "Test")
 public class servoTuner extends OpMode {
-    public static double target_claw = 0.5;
+    public static double target_claw = 0.0;
     public static double target_bucket = 1.0;
 
     Servo claw;

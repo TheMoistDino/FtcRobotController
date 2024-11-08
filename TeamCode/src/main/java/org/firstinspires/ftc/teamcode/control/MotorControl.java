@@ -28,11 +28,11 @@ public class MotorControl
     double max_liftPower = 1.0;
     public int currentLiftPos;
     public int minLiftPos = 0;
-    public int maxLiftPos = 0;
+    public int maxLiftPos = 11200;
     public enum LiftDirection {up, down}
     public enum LiftHeight {high_basket, low_basket, high_chamber, low_chamber}
-    int high_basket_pos = 1000, low_basket_pos = 600,
-        high_chamber_pos = 700, low_chamber_pos = 400;
+    int high_basket_pos = 9000, low_basket_pos = 5000,
+        high_chamber_pos = 7000, low_chamber_pos = 3000;
     // Arm Variables
     double armAccel = 0.5;
     double armPower = 0.0;
@@ -44,7 +44,7 @@ public class MotorControl
     ///// Create PIDF Variables
     private PIDController pidController;
     private static final double[] armPIDF = {0,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
-    private static final double[] liftPIDF = {0,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
+    private static final double[] liftPIDF = {0.006,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
     /////
 
     ///// Create and Define Timer Variables to let the motors have time to run to position
@@ -171,11 +171,11 @@ public class MotorControl
         switch (armDirection)
         {
             case up:
-                max_armPower = 0.3;
+                max_armPower = 0.4;
                 armPower += armAccel * (max_armPower - armPower);
                 break;
             case down:
-                max_armPower = 0.5;
+                max_armPower = 0.3;
                 armPower -= armAccel * (max_armPower - armPower);
                 break;
         }

@@ -24,7 +24,7 @@ public class ServoControl
     static boolean isGrab, isDumped;
     static final double closeClawPos = 0.32, // Change to closed claw position
                         openClawPos  = 0.0, // Change to open claw position
-                        notDumpedPos = 0.9, // Change to not dumped position
+                        notDumpedPos = 0.95, // Change to not dumped position
                         dumpedPos = 0.0; // Change to dumped position
     /////
 

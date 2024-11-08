@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.control.HolonomicDrive;
 import org.firstinspires.ftc.teamcode.control.MotorControl;
@@ -19,8 +20,8 @@ public class TeleOp extends LinearOpMode
     double DRIVETRAIN_SPEED_MULTIPLIER = 1.0;
     double LIFT_SPEED_MULTIPLIER = 1.0;
 
-    // Initialize a variable to store the current driving mode
-    boolean isFieldOriented = false;
+    boolean isFieldOriented = false; // Initialize a variable to store the current driving mode
+    boolean liftDebug = false; // Initialize a variable to store the current lift debug mode
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -91,24 +92,13 @@ public class TeleOp extends LinearOpMode
             }
 
             // Determine the desired lift direction based on trigger input
-            MotorControl.LiftDirection liftDirection = null;
-            if (gamepad1.right_trigger != 0 && motorControl.currentLiftPos < motorControl.maxLiftPos)
+            if (gamepad1.right_trigger != 0 && (liftDebug || motorControl.currentLiftPos < motorControl.maxLiftPos))
             {
-                liftDirection = MotorControl.LiftDirection.up;
+                motorControl.MoveLift(MotorControl.LiftDirection.up, LIFT_SPEED_MULTIPLIER);
             }
-            else if (gamepad1.left_trigger != 0 && motorControl.currentLiftPos > motorControl.minLiftPos)
+            else if (gamepad1.left_trigger != 0 && (liftDebug || motorControl.currentLiftPos > motorControl.minLiftPos))
             {
-                liftDirection = MotorControl.LiftDirection.down;
-            }
-
-            // Control the lift based on the determined direction
-            if (liftDirection == MotorControl.LiftDirection.up)
-            {
-                motorControl.MoveLift(liftDirection, LIFT_SPEED_MULTIPLIER);
-            }
-            else if (liftDirection == MotorControl.LiftDirection.down)
-            {
-                motorControl.MoveLift(liftDirection, LIFT_SPEED_MULTIPLIER);
+                motorControl.MoveLift(MotorControl.LiftDirection.down, LIFT_SPEED_MULTIPLIER);
             }
             else
             {
@@ -116,7 +106,7 @@ public class TeleOp extends LinearOpMode
             }
 
             // If the lift is beyond the set min or max positions, return the lift to the nearest limit
-            if (motorControl.currentLiftPos < motorControl.minLiftPos || motorControl.currentLiftPos > motorControl.maxLiftPos)
+            if ((motorControl.currentLiftPos < motorControl.minLiftPos || motorControl.currentLiftPos > motorControl.maxLiftPos) && (!liftDebug))
             {
                 motorControl.StopAndReturnLift();
             }
@@ -141,13 +131,28 @@ public class TeleOp extends LinearOpMode
                 // Toggle the driving mode
                 isFieldOriented = !isFieldOriented;
 
-                // Provide feedback to the user (optional)
-                telemetry.addData("Driving Mode", isFieldOriented ? "Field-Oriented" : "Robot-Oriented");
-                telemetry.update();
+                // Add a small delay to avoid rapid toggling
+                sleep(200);
+            }
+
+            if(gamepad2.a)
+            {
+                // Toggle liftDebug
+                liftDebug = !liftDebug;
 
                 // Add a small delay to avoid rapid toggling
                 sleep(200);
             }
+
+            if(gamepad2.x)
+            {
+                // Reset lift position
+                motorControl.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
+
+            telemetry.addData("Lift Position", motorControl.lift.getCurrentPosition());
+            telemetry.addData("Driving Mode", isFieldOriented ? "Field-Oriented" : "Robot-Oriented");
+            telemetry.addData("Lift Debug Mode",liftDebug ? "On" : "Off");
 
             telemetry.update();
         }

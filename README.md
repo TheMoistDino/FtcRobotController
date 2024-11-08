@@ -34,9 +34,20 @@ Once you have downloaded and uncompressed (if needed) your folder, you can use A
 - Start Button = Toggle Robot-Oriented to Field-Oriented
 - Right Bumper = Slow Driving
 - Left Bumper = Slow Lift & Arm
+- A = Toggle liftDebug mode
+- X = Reset lift position to zero
 
 ## Change Log
-### Added cameraColorTuner.java
+### Tuned & Adjusted Values (11/7, 19:00)
+#### servoTuner.java, ServoControl.java, motorTuner.java
+* Adjusted variable names and some values
+#### MotorControl.java
+* Tuned lift motor and set min and max ranges
+#### TeleOp.java
+* Added 2 functions to Gamepad 2 (A and X)
+  * Allow the lift to move beyond incorrectly set program limits
+
+### Added cameraColorTuner.java (11/5, 06:30)
 * Performs color masking to specific ranges
 
 ### Included Gamepad controls + Servo Optimizations (11/3, 21:00)
