@@ -33,12 +33,16 @@ public class MotorControl
     public enum LiftHeight {high_basket, low_basket, high_chamber, low_chamber}
     int high_basket_pos = 9000, low_basket_pos = 5000,
         high_chamber_pos = 7000, low_chamber_pos = 3000;
+
+    // Initialize the map
+    Map<LiftHeight, Integer> liftPositions = new HashMap<>();
+
     // Arm Variables
     double armAccel = 0.5;
     double armPower = 0.0;
     double max_armPower;
     public int currentArmPos;
-    public enum ArmDirection {up, down}
+    public enum ArmDirection {forward, backward}
     /////
 
     ///// Create PIDF Variables
@@ -63,6 +67,11 @@ public class MotorControl
         MotorControl.arm  = hardwareMap.get(DcMotor.class, armName);
         // Instantiate Telemetry
         MotorControl.telemetry = telemetry;
+        // Initialize the Map for liftPositions
+        liftPositions.put(LiftHeight.high_basket, high_basket_pos);
+        liftPositions.put(LiftHeight.low_basket, low_basket_pos);
+        liftPositions.put(LiftHeight.high_chamber, high_chamber_pos);
+        liftPositions.put(LiftHeight.low_chamber, low_chamber_pos);
 
         // If the joysticks aren't touched, the robot won't move (set to BRAKE)
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -99,23 +108,6 @@ public class MotorControl
         lift.setTargetPosition(targetPosition);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setPower(max_liftPower); // Assuming you have a max_liftPower variable
-    }
-
-    public void LockLiftPID()
-    {
-        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        pidController.setPID(liftPIDF[0],liftPIDF[1],liftPIDF[2]);
-        currentLiftPos = lift.getCurrentPosition();
-
-        double pid = pidController.calculate(currentLiftPos, currentLiftPos);
-        double ff = currentLiftPos * liftPIDF[3];
-
-        double power = pid + ff;
-
-        lift.setPower(power);
-
-        telemetry.addData("lift pos", currentLiftPos);
     }
 
     // This method is used to lock the position of the arm
@@ -170,12 +162,12 @@ public class MotorControl
 
         switch (armDirection)
         {
-            case up:
-                max_armPower = 0.4;
+            case forward:
+                max_armPower = 0.3;
                 armPower += armAccel * (max_armPower - armPower);
                 break;
-            case down:
-                max_armPower = 0.3;
+            case backward:
+                max_armPower = 0.4;
                 armPower -= armAccel * (max_armPower - armPower);
                 break;
         }
@@ -189,12 +181,6 @@ public class MotorControl
     public void LiftToPosition(LiftHeight liftHeight, double timeoutSeconds)
     {
         int target;
-        // Initialize the map (ideally, do this once during initialization)
-        Map<LiftHeight, Integer> liftPositions = new HashMap<>();
-        liftPositions.put(LiftHeight.high_basket, high_basket_pos);
-        liftPositions.put(LiftHeight.low_basket, low_basket_pos);
-        liftPositions.put(LiftHeight.high_chamber, high_chamber_pos);
-        liftPositions.put(LiftHeight.low_chamber, low_chamber_pos);
 
         // Get the target position
         target = liftPositions.getOrDefault(liftHeight, 0);
@@ -231,6 +217,44 @@ public class MotorControl
         // After the lift runs to position, it stops
         lift.setPower(0);
         telemetry.addData("final position", lift.getCurrentPosition());
+        telemetry.update();
+    }
+
+    // This method is used to make the arm go to a specified position
+    public void ArmToPosition(int target, double timeoutSeconds)
+    {
+        // Initialize the arm motor to the correct mode (to maximize power)
+        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // Resets timer
+        runtime.reset();
+
+        // Gets the position of the lift motor
+        currentArmPos = arm.getCurrentPosition();
+
+        while ((runtime.seconds() < timeoutSeconds) && (arm.isBusy()))
+        {
+            // Sets controller PID to the variables in the array
+            pidController.setPID(armPIDF[0],armPIDF[1],armPIDF[2]);
+
+            // Gets position of lift motor
+            currentArmPos = arm.getCurrentPosition();
+
+            // Calculates the power of the lift motor
+            double armPID = pidController.calculate(currentArmPos, target);
+            double ff = currentArmPos * armPIDF[3];
+
+            // Sets the power of the lift motor
+            double power = armPID + ff;
+            arm.setPower(power);
+
+            // Update current state to telemetry
+            telemetry.addData("currently running","");
+            telemetry.update();
+        }
+
+        // After the lift runs to position, it stops
+        arm.setPower(0);
+        telemetry.addData("final position", arm.getCurrentPosition());
         telemetry.update();
     }
 }

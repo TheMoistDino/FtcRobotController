@@ -38,6 +38,11 @@ Once you have downloaded and uncompressed (if needed) your folder, you can use A
 - X = Reset lift position to zero
 
 ## Change Log
+### Reorganized Variables + Added ArmToPosition Method (11/9, 14:00)
+#### MotorControl.java + related classes
+* Renamed armDirection variables to 'forward' and 'backward'
+* Added ArmToPosition method
+
 ### Tuned & Adjusted Values (11/7, 19:00)
 #### servoTuner.java, ServoControl.java, motorTuner.java
 * Adjusted variable names and some values

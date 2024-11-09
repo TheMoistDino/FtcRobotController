@@ -94,11 +94,11 @@ public class SampleTeleOp extends LinearOpMode
             // Buttons to move arm up/down
             if(gamepad1.dpad_up)
             {
-                motorControl.MoveArm(MotorControl.ArmDirection.up, LIFT_SPEED);
+                motorControl.MoveArm(MotorControl.ArmDirection.forward, LIFT_SPEED);
             }
             else if(gamepad1.dpad_down)
             {
-                motorControl.MoveArm(MotorControl.ArmDirection.down, LIFT_SPEED);
+                motorControl.MoveArm(MotorControl.ArmDirection.backward, LIFT_SPEED);
             }
             else if(!gamepad1.dpad_up && !gamepad1.dpad_down)
             {

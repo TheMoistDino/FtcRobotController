@@ -43,7 +43,8 @@ public class TeleOp extends LinearOpMode
         //////////////////////
 
 
-        telemetry.addData("robot ready","");
+        telemetry.addData("Robot Status","Ready");
+        telemetry.addData("Driving Mode", isFieldOriented ? "Field-Oriented" : "Robot-Oriented");
         telemetry.update();
 
         // Wait for the play button to be pressed
@@ -114,11 +115,11 @@ public class TeleOp extends LinearOpMode
             // Buttons to move arm up/down
             if(gamepad1.dpad_up)
             {
-                motorControl.MoveArm(MotorControl.ArmDirection.up, LIFT_SPEED_MULTIPLIER);
+                motorControl.MoveArm(MotorControl.ArmDirection.forward, LIFT_SPEED_MULTIPLIER);
             }
             else if(gamepad1.dpad_down)
             {
-                motorControl.MoveArm(MotorControl.ArmDirection.down, LIFT_SPEED_MULTIPLIER);
+                motorControl.MoveArm(MotorControl.ArmDirection.backward, LIFT_SPEED_MULTIPLIER);
             }
             else if(!gamepad1.dpad_up && !gamepad1.dpad_down)
             {
@@ -132,7 +133,7 @@ public class TeleOp extends LinearOpMode
                 isFieldOriented = !isFieldOriented;
 
                 // Add a small delay to avoid rapid toggling
-                sleep(200);
+                sleep(100);
             }
 
             if(gamepad2.a)
@@ -141,7 +142,7 @@ public class TeleOp extends LinearOpMode
                 liftDebug = !liftDebug;
 
                 // Add a small delay to avoid rapid toggling
-                sleep(200);
+                sleep(100);
             }
 
             if(gamepad2.x)
@@ -151,8 +152,9 @@ public class TeleOp extends LinearOpMode
             }
 
             telemetry.addData("Lift Position", motorControl.lift.getCurrentPosition());
+            telemetry.addData("Arm Position", motorControl.arm.getCurrentPosition());
             telemetry.addData("Driving Mode", isFieldOriented ? "Field-Oriented" : "Robot-Oriented");
-            telemetry.addData("Lift Debug Mode",liftDebug ? "On" : "Off");
+            telemetry.addData("Lift Debug Mode", liftDebug ? "On" : "Off");
 
             telemetry.update();
         }
