@@ -198,8 +198,7 @@ public class AutoMeetOneL extends LinearOpMode
         MecanumDrive drive = new MecanumDrive(hardwareMap, firstPose);
 
         TrajectoryActionBuilder step1 = drive.actionBuilder(firstPose)
-                .strafeTo(new Vector2d(-52,-52))
-                .turn(Math.toRadians(-45))
+                .strafeToLinearHeading(new Vector2d(-52,-52), Math.toRadians(-135))
                 .waitSeconds(1.5)
                 .strafeTo(new Vector2d(-57,-57))
                 .waitSeconds(0.5);
@@ -209,20 +208,21 @@ public class AutoMeetOneL extends LinearOpMode
                 .strafeTo(new Vector2d(-48,-44));
 
         TrajectoryActionBuilder step3 = drive.actionBuilder(thirdPose)
-                .splineToLinearHeading(fourthPose, 0);
+                .strafeToLinearHeading(new Vector2d(-52,-52), Math.toRadians(-135));
 
         TrajectoryActionBuilder step4 = drive.actionBuilder(fourthPose)
                 .strafeTo(new Vector2d(-57, -57));
 
         TrajectoryActionBuilder step5 = drive.actionBuilder(fifthPose)
                 .turn(Math.toRadians(45))
-                .lineToY(-44)
+                .strafeTo(new Vector2d(-58,-57))
                 .strafeTo(new Vector2d(-58,-44));
 
         TrajectoryActionBuilder step6 = drive.actionBuilder(sixthPose)
-                .splineToLinearHeading(new Pose2d(-52,-52, Math.toRadians(-135)), 0)
+                .strafeToLinearHeading(new Vector2d(-52,-52), Math.toRadians(-135))
                 .waitSeconds(1.5)
-                .strafeTo(new Vector2d(-57,-57));
+                .strafeTo(new Vector2d(-57,-57))
+                .waitSeconds(0.5);
 
         Action trajectoryStep1 = step1.build();
         Action trajectoryStep2 = step2.build();
@@ -233,7 +233,7 @@ public class AutoMeetOneL extends LinearOpMode
 
         Action trajectoryActionFinal = step6.fresh()
                 .strafeTo(new Vector2d(-52,-52))
-                .splineToSplineHeading(new Pose2d(-36,-12, Math.toRadians(180)), 0)
+                .splineToSplineHeading(new Pose2d(-36,-12, Math.toRadians(180)), 0, new TranslationalVelConstraint(17.5))
                 .strafeTo(new Vector2d(-23.5,-12), new TranslationalVelConstraint(10.0))
                 .build();
 

@@ -22,37 +22,34 @@ public class MeepMeepTesting {
                 .build();
 
         leftBot.runAction(leftBot.getDrive().actionBuilder(new Pose2d(-35, -61.5, Math.toRadians(-90)))
-                .strafeTo(new Vector2d(-52,-52))
-                .turn(Math.toRadians(-45))
+                .strafeToLinearHeading(new Vector2d(-52,-52), Math.toRadians(-135))
                 .waitSeconds(1.5)
                 .strafeTo(new Vector2d(-57,-57))
                 .waitSeconds(1)
 
                 .lineToXLinearHeading(-48, Math.toRadians(-90))
-                .strafeTo(new Vector2d(-48,-44))
+                .strafeTo(new Vector2d(-48,-44), new TranslationalVelConstraint(10))
+                .waitSeconds(3)
 
-                .waitSeconds(4)
-                .splineToLinearHeading(new Pose2d(-52,-52, Math.toRadians(-135)), 0)
-
+                .strafeToLinearHeading(new Vector2d(-52,-52), Math.toRadians(-135))
                 .waitSeconds(1.5)
-                .strafeTo(new Vector2d(-57,-57))
 
+                .strafeTo(new Vector2d(-57,-57))
                 .waitSeconds(1)
 
                 .turn(Math.toRadians(45))
                 .strafeTo(new Vector2d(-58,-57))
-                .strafeTo(new Vector2d(-58,-44))
+                .strafeTo(new Vector2d(-58,-44), new TranslationalVelConstraint(10))
+                .waitSeconds(3)
 
-                .waitSeconds(1.5)
-                .splineToLinearHeading(new Pose2d(-52,-52, Math.toRadians(-135)), 0)
+                .strafeToLinearHeading(new Vector2d(-52,-52), Math.toRadians(-135))
                 .waitSeconds(1.5)
                 .strafeTo(new Vector2d(-57,-57))
-                .waitSeconds(1.5)
+                .waitSeconds(1)
 
                 .strafeTo(new Vector2d(-52,-52))
-                .splineToSplineHeading(new Pose2d(-36,-12, 0), 0, new TranslationalVelConstraint(15.0))
+                .splineToSplineHeading(new Pose2d(-36,-12, 0), 0, new TranslationalVelConstraint(17.5))
                 .strafeTo(new Vector2d(-23.5,-12), new TranslationalVelConstraint(10.0))
-
                 .build());
 
         rightBot.runAction(rightBot.getDrive().actionBuilder(new Pose2d(12, -61.5, Math.toRadians(-90)))
