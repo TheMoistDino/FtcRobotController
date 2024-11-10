@@ -38,6 +38,18 @@ Once you have downloaded and uncompressed (if needed) your folder, you can use A
 - X = Reset lift position to zero
 
 ## Change Log
+### New AUTO programs: AutoMeetOneL, AutoMeetOneLPush, AutoMeetOneR (11/10, 12:00)
+* Implemented autonomous paths + actions using Road Runner
+  * Two variations for the left paths
+    * Score 3 in high basket (which is Left Baskets)
+      * 27pt AUTO + 24 TELEOP = 51pt total
+    * Score 1 in high basket + 2 in net zone (which is Left Push)
+      * 13pt AUTO + 10 TELEOP = 23pt total
+  * One variation for right path
+    * Push 2 to the observation zone
+      * 3pt AUTO Park
+  * All park (Left in ASCENT zone, Right in Observation Zone)
+
 ### MeepMeep + Road Runner for AUTO (11/9, 23:30)
 * Installed MeepMeep for RR 1.0.x
 * Created predicted paths for AUTO for the left and right starting positions

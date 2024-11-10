@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.control.MotorControl;
 import org.firstinspires.ftc.teamcode.control.ServoControl;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
-@Autonomous(name = "Meet 1: Left Baskets", group = "Auto", preselectTeleOp = "Meet 1 TeleOp")
-public class AutoMeetOneL extends LinearOpMode
+@Autonomous(name = "Meet 1: Left Push", group = "Auto", preselectTeleOp = "Meet 1 TeleOp")
+public class AutoMeetOneLPush extends LinearOpMode
 {
     // Variables used for Method Calling
     MotorControl motorControl;
@@ -203,84 +203,31 @@ public class AutoMeetOneL extends LinearOpMode
                 .strafeTo(new Vector2d(-57,-57));
 
         TrajectoryActionBuilder step2 = drive.actionBuilder(secondPose)
-                .lineToXLinearHeading(-48, Math.toRadians(-90))
-                .strafeTo(new Vector2d(-48,-44));
-
-        TrajectoryActionBuilder step3 = drive.actionBuilder(thirdPose)
-                .strafeToLinearHeading(new Vector2d(-52,-52), Math.toRadians(-135))
-                .waitSeconds(2);
-
-        TrajectoryActionBuilder step4 = drive.actionBuilder(fourthPose)
-                .strafeTo(new Vector2d(-57, -57));
-
-        TrajectoryActionBuilder step5 = drive.actionBuilder(fifthPose)
-                .turn(Math.toRadians(45))
-                .strafeTo(new Vector2d(-58,-57))
-                .strafeTo(new Vector2d(-58,-44));
-
-        TrajectoryActionBuilder step6 = drive.actionBuilder(sixthPose)
-                .strafeToLinearHeading(new Vector2d(-52,-52), Math.toRadians(-135))
-                .waitSeconds(2)
-                .strafeTo(new Vector2d(-57,-57))
-                .waitSeconds(0.5);
+                .strafeToLinearHeading(new Vector2d(-37,-38),Math.toRadians(-90))
+                .strafeTo(new Vector2d(-37,-12))
+                .strafeTo(new Vector2d(-46, -12))
+                .strafeTo(new Vector2d(-46,-60))
+                .strafeTo(new Vector2d(-55,-60))
+                .strafeTo(new Vector2d(-46, -36))
+                .strafeTo(new Vector2d(-46, -12))
+                .strafeTo(new Vector2d(-56, -12))
+                .strafeTo(new Vector2d(-56, -60))
+                .strafeTo(new Vector2d(-56, -48))
+                .strafeToLinearHeading(new Vector2d(-56, -12),0)
+                .strafeTo(new Vector2d(-23.5,-12),new TranslationalVelConstraint(15.0));
 
         Action trajectoryStep1 = step1.build();
         Action trajectoryStep2 = step2.build();
-        Action trajectoryStep3 = step3.build();
-        Action trajectoryStep4 = step4.build();
-        Action trajectoryStep5 = step5.build();
-        Action trajectoryStep6 = step6.build();
-
-        Action trajectoryActionFinal = step6.fresh()
-                .strafeTo(new Vector2d(-52,-52))
-                .splineToSplineHeading(new Pose2d(-36,-12, 0), 0, new TranslationalVelConstraint(25.0))
-                .strafeTo(new Vector2d(-23.5,-12), new TranslationalVelConstraint(17.5))
-                .build();
 
         Action scoreFirst = new SequentialAction(
                                 new ParallelAction(
                                     trajectoryStep1,
                                     lift.highBasket()),
                                 bucket.dump());
-        Action setupSecond = new ParallelAction(
-                                trajectoryStep2,
-                                bucket.dump(),
-                                lift.zero(),
-                                arm.forward());
-        Action intakeSecond = new SequentialAction(
-                                new SleepAction(0.2),
-                                claw.grab(),
-                                new SleepAction(0.2),
-                                arm.backward(),
-                                new SleepAction(0.2),
-                                claw.grab());
-        Action scoreSecond = new SequentialAction(
-                                new ParallelAction(
-                                    trajectoryStep3,
-                                    lift.highBasket()),
-                                trajectoryStep4,
-                                bucket.dump());
-        Action setupThird = new SequentialAction(
-                                new ParallelAction(
-                                    trajectoryStep5,
-                                    bucket.dump(),
-                                    arm.forward()),
-                                lift.zero());
-        Action intakeThird = new SequentialAction(
-                                claw.grab(),
-                                new SleepAction(0.2),
-                                arm.backward(),
-                                new SleepAction(0.2),
-                                claw.grab());
-        Action scoreThird = new SequentialAction(
-                                new ParallelAction(
-                                    trajectoryStep6,
-                                    lift.highBasket()),
-                                bucket.dump());
-        Action ascentPark = new ParallelAction(
-                                trajectoryActionFinal,
-                                bucket.dump(),
-                                lift.lowBasket());
+        Action push = new ParallelAction(
+                trajectoryStep2,
+                lift.lowBasket()
+        );
 
         // Initialize control functions
         servoControl.StartServos();
@@ -295,13 +242,7 @@ public class AutoMeetOneL extends LinearOpMode
         Actions.runBlocking(
                 new SequentialAction(
                         scoreFirst,
-                        setupSecond,
-                        intakeSecond,
-                        scoreSecond,
-                        setupThird,
-                        intakeThird,
-                        scoreThird,
-                        ascentPark
+                        push
                 )
         );
 
