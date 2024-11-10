@@ -38,6 +38,13 @@ Once you have downloaded and uncompressed (if needed) your folder, you can use A
 - X = Reset lift position to zero
 
 ## Change Log
+### MeepMeep + Road Runner for AUTO (11/9, 23:30)
+* Installed MeepMeep for RR 1.0.x
+* Created predicted paths for AUTO for the left and right starting positions
+  * Implemented in AutoMeetOneL.java
+  * Not yet in AutoMeetOneR.java
+* Other small changes in misc files
+
 ### Reorganized Variables + Added ArmToPosition Method (11/9, 14:00)
 #### MotorControl.java + related classes
 * Renamed armDirection variables to 'forward' and 'backward'

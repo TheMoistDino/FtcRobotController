@@ -30,9 +30,12 @@ public class MotorControl
     public int minLiftPos = 0;
     public int maxLiftPos = 11200;
     public enum LiftDirection {up, down}
-    public enum LiftHeight {high_basket, low_basket, high_chamber, low_chamber}
+    public enum LiftHeight {high_basket, low_basket, high_chamber, low_chamber, zero}
     int high_basket_pos = 9000, low_basket_pos = 5000,
-        high_chamber_pos = 7000, low_chamber_pos = 3000;
+        high_chamber_pos = 7000, low_chamber_pos = 3000,
+        zero_pos = 0;
+
+    public boolean isLiftRunning = false;
 
     // Initialize the map
     Map<LiftHeight, Integer> liftPositions = new HashMap<>();
@@ -43,6 +46,8 @@ public class MotorControl
     double max_armPower;
     public int currentArmPos;
     public enum ArmDirection {forward, backward}
+
+    public boolean isArmRunning = false;
     /////
 
     ///// Create PIDF Variables
@@ -72,6 +77,7 @@ public class MotorControl
         liftPositions.put(LiftHeight.low_basket, low_basket_pos);
         liftPositions.put(LiftHeight.high_chamber, high_chamber_pos);
         liftPositions.put(LiftHeight.low_chamber, low_chamber_pos);
+        liftPositions.put(LiftHeight.zero, zero_pos);
 
         // If the joysticks aren't touched, the robot won't move (set to BRAKE)
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -209,6 +215,8 @@ public class MotorControl
             double power = liftPID + ff;
             lift.setPower(power);
 
+            isLiftRunning = true;
+
             // Update current state to telemetry
             telemetry.addData("currently running","");
             telemetry.update();
@@ -216,6 +224,9 @@ public class MotorControl
 
         // After the lift runs to position, it stops
         lift.setPower(0);
+
+        isLiftRunning = false;
+
         telemetry.addData("final position", lift.getCurrentPosition());
         telemetry.update();
     }
@@ -247,6 +258,8 @@ public class MotorControl
             double power = armPID + ff;
             arm.setPower(power);
 
+            isArmRunning = true;
+
             // Update current state to telemetry
             telemetry.addData("currently running","");
             telemetry.update();
@@ -254,6 +267,9 @@ public class MotorControl
 
         // After the lift runs to position, it stops
         arm.setPower(0);
+
+        isArmRunning = false;
+
         telemetry.addData("final position", arm.getCurrentPosition());
         telemetry.update();
     }
