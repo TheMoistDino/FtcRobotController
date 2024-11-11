@@ -38,6 +38,9 @@ Once you have downloaded and uncompressed (if needed) your folder, you can use A
 - X = Reset lift position to zero
 
 ## Change Log
+### 4 Entity/Robot MeepMeep Simulator (11/10, 22:00)
+* Added & adjusted paths in MeepMeepTesting.java
+
 ### New AUTO programs: AutoMeetOneL, AutoMeetOneLPush, AutoMeetOneR (11/10, 12:00)
 * Implemented autonomous paths + actions using Road Runner
   * Two variations for the left paths
