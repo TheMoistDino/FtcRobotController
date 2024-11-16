@@ -24,8 +24,8 @@ import org.opencv.core.Scalar;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-@Disabled
 @Config
+@Disabled
 @TeleOp(name="Camera Color Tuner", group="Test")
 public class cameraColorTuner extends LinearOpMode
 {

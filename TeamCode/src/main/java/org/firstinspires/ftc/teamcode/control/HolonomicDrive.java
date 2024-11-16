@@ -138,7 +138,7 @@ public class HolonomicDrive
         double max; // Limit motor's powers to 100%
 
         // Cool vector math to calculate power to the drive motors
-        x    = leftStickX;
+        x    = leftStickX * 1.05;
         y    = -leftStickY;
         turn = rightStickX;
 
@@ -342,5 +342,25 @@ public class HolonomicDrive
 
         telemetry.addData("finished driving","");
         telemetry.update();
+    }
+
+    public void ForwardDrive(double inches, double power)
+    {
+        int target = (int)(inches * COUNTS_PER_INCH);
+
+        leftFront.setTargetPosition(target);
+        leftBack.setTargetPosition(target);
+        rightFront.setTargetPosition(target);
+        rightBack.setTargetPosition(target);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftFront.setPower(power);
+        leftBack.setPower(power);
+        rightFront.setPower(power);
+        rightBack.setPower(power);
     }
 }

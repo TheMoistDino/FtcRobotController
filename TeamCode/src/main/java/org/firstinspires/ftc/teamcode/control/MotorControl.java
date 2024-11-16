@@ -41,18 +41,27 @@ public class MotorControl
     Map<LiftHeight, Integer> liftPositions = new HashMap<>();
 
     // Arm Variables
-    double armAccel = 0.5;
+    double armAccel = 0.25;
     double armPower = 0.0;
     double max_armPower;
     public int currentArmPos;
-    public enum ArmDirection {forward, backward}
+
+        // Arm Angle Variables
+        double Kcos; // Tune this value
+        double target_angle = 0; // Adjusted based on forward/backward
+        double setup_angle = 550; // Set setup angle
+        double max_armAngle = 720; // Set max angle
+        double offsetAngle; // Set initial angle offset
+        double ticksToAngles = (360/1120);
+    public enum ArmDirection {forward, backward, setup}
 
     public boolean isArmRunning = false;
     /////
 
     ///// Create PIDF Variables
-    private PIDController pidController;
-    private static final double[] armPIDF = {0,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
+    private PIDController armPIDController;
+    private PIDController liftPIDController;
+    private static final double[] armPIDF = {0,0.01,0,0.004}; // index 0 = p, 1 = i, 2 = d, 3 = f
     private static final double[] liftPIDF = {0.006,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
     /////
 
@@ -70,6 +79,7 @@ public class MotorControl
         // Instantiate Motor Objects
         MotorControl.lift = hardwareMap.get(DcMotor.class, liftName);
         MotorControl.arm  = hardwareMap.get(DcMotor.class, armName);
+        arm.setDirection(DcMotor.Direction.REVERSE);
         // Instantiate Telemetry
         MotorControl.telemetry = telemetry;
         // Initialize the Map for liftPositions
@@ -86,6 +96,10 @@ public class MotorControl
         // Reset Motor Encoders
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm .setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Set PIDControllers to the variables in the array
+        liftPIDController = new PIDController(liftPIDF[0],liftPIDF[1],liftPIDF[2]);
+        armPIDController = new PIDController(armPIDF[0],armPIDF[1],armPIDF[2]);
 
         // Display Message on Screen
         telemetry.addData("initializing", "motors");
@@ -125,21 +139,6 @@ public class MotorControl
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setPower(max_armPower);
     }
-    public void LockArmPID()
-    {
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        pidController.setPID(armPIDF[0],armPIDF[1],armPIDF[2]);
-        currentArmPos = arm.getCurrentPosition();
-
-        double pid = pidController.calculate(currentArmPos, currentArmPos);
-        double ff = currentArmPos * armPIDF[3];
-        double power = pid + ff;
-
-        arm.setPower(power);
-
-        telemetry.addData("arm pos", currentArmPos);
-    }
 
     // This method is used to move the lift
     public void MoveLift(LiftDirection liftDirection, double LIFT_SPEED)
@@ -173,8 +172,8 @@ public class MotorControl
                 armPower += armAccel * (max_armPower - armPower);
                 break;
             case backward:
-                max_armPower = 0.4;
-                armPower -= armAccel * (max_armPower - armPower);
+                max_armPower = -0.2;
+                armPower += armAccel * (max_armPower - armPower);
                 break;
         }
 
@@ -182,6 +181,26 @@ public class MotorControl
 
         currentArmPos = arm.getCurrentPosition();
     }
+
+    public void ArmControl(ArmDirection direction, double armSpeed)
+    {
+        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        switch (direction)
+        {
+            case forward:
+                armPower = 0.4;
+                break;
+            case backward:
+                armPower = -0.4;
+                break;
+            case setup:
+                armPower = 0;
+        }
+
+        arm.setPower(armPower * armSpeed);
+    }
+
 
     // This method is used to make the lift go to a specified position
     public void LiftToPosition(LiftHeight liftHeight, double timeoutSeconds)
@@ -201,14 +220,11 @@ public class MotorControl
 
         while ((runtime.seconds() < timeoutSeconds) && (lift.isBusy()))
         {
-            // Sets controller PID to the variables in the array
-            pidController.setPID(liftPIDF[0],liftPIDF[1],liftPIDF[2]);
-
             // Gets position of lift motor
             currentLiftPos = lift.getCurrentPosition();
 
             // Calculates the power of the lift motor
-            double liftPID = pidController.calculate(currentLiftPos, target);
+            double liftPID = liftPIDController.calculate(currentLiftPos, target);
             double ff = currentLiftPos * liftPIDF[3];
 
             // Sets the power of the lift motor
@@ -244,14 +260,11 @@ public class MotorControl
 
         while ((runtime.seconds() < timeoutSeconds) && (arm.isBusy()))
         {
-            // Sets controller PID to the variables in the array
-            pidController.setPID(armPIDF[0],armPIDF[1],armPIDF[2]);
-
             // Gets position of lift motor
             currentArmPos = arm.getCurrentPosition();
 
             // Calculates the power of the lift motor
-            double armPID = pidController.calculate(currentArmPos, target);
+            double armPID = armPIDController.calculate(currentArmPos, target);
             double ff = currentArmPos * armPIDF[3];
 
             // Sets the power of the lift motor

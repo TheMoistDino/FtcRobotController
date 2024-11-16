@@ -1,24 +1,5 @@
-## NOTICE
-
-This repository contains the public FTC SDK for the INTO THE DEEP (2024-2025) competition season.
-
 ## Welcome!
-This GitHub repository contains the source code that is used to build an Android app to control a *FIRST* Tech Challenge competition robot.
-This repo also includes the source code used in 6373 SuperBots' competition robot for the INTO THE DEEP (2024-2025) competition season.
-
-## Requirements
-To use this Android Studio project, you will need Android Studio 2021.2 (codename Chipmunk) or later.
-
-## Downloading the Project
-If you are an Android Studio programmer, there are several ways to download this repo.  Note that if you use the Blocks or OnBot Java Tool to program your robot, then you do not need to download this repository.
-
-* If you are a git user, you can clone the most current version of the repository:
-
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;git clone https://github.com/TheMoistDino/FtcRobotController.git</p>
-
-* Or, if you prefer, you can use the "Download Zip" button available through the main repository page.  Downloading the project as a .ZIP file will keep the size of the download manageable.
-
-Once you have downloaded and uncompressed (if needed) your folder, you can use Android Studio to import the folder  ("Import project (Eclipse ADT, Gradle, etc.)").
+This GitHub repo includes the source code used in 6373 SuperBots competition robot for the INTO THE DEEP (2024-2025) season.
 
 ## Robot Controls
 ### Gamepad 1
@@ -33,11 +14,14 @@ Once you have downloaded and uncompressed (if needed) your folder, you can use A
 ### Gamepad 2
 - Start Button = Toggle Robot-Oriented to Field-Oriented
 - Right Bumper = Slow Driving
-- Left Bumper = Slow Lift & Arm
-- A = Toggle liftDebug mode
-- X = Reset lift position to zero
+- Left Bumper = Slow Lift
+- A = Slow Arm
+- B = Toggle liftDebug mode
+- XBack = Reset lift position to zero
 
 ## Change Log
+### Meet 1 (11/16, 7:00)
+
 ### 4 Entity/Robot MeepMeep Simulator (11/10, 22:00)
 * Added & adjusted paths in MeepMeepTesting.java
 
