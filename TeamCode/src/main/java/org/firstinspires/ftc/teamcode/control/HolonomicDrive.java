@@ -236,7 +236,7 @@ public class HolonomicDrive
     }
 
     // This method is used to drive the robot forward some number of inches forward in Auto
-    public void ForwardDrive(double inchesForward, double maxPower, double timeoutS)
+    public void ForwardDrive(double inchesForward, double maxPower, double timeoutS, int h)
     {
         leftFront .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -344,7 +344,7 @@ public class HolonomicDrive
         telemetry.update();
     }
 
-    public void ForwardDrive(double inches, double power)
+    public void ForwardDrive(double inches, double power, double timeoutS)
     {
         int target = (int)(inches * COUNTS_PER_INCH);
 
@@ -358,9 +358,74 @@ public class HolonomicDrive
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        runtime.reset();
+
         leftFront.setPower(power);
         leftBack.setPower(power);
         rightFront.setPower(power);
         rightBack.setPower(power);
+
+        while((runtime.seconds() < timeoutS) && (leftFront.isBusy() && leftBack.isBusy() && rightFront.isBusy() && rightBack.isBusy()))
+        {
+            telemetry.addData("currently running","");
+            telemetry.update();
+        }
+
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
+    }
+
+    public void TimerStraight(double power, double timeoutS)
+    {
+        leftFront .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack  .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        runtime.reset();
+
+        while(runtime.seconds() < timeoutS)
+        {
+            leftFront.setPower(power);
+            leftBack.setPower(power);
+            rightFront.setPower(power);
+            rightBack.setPower(power);
+
+            telemetry.addData("currently running","");
+            telemetry.update();
+        }
+
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
+    }
+
+    public void TimerStrafe(double power, double timeoutS)
+    {
+        leftFront .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack  .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack .setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        runtime.reset();
+
+        while(runtime.seconds() < timeoutS)
+        {
+            leftFront.setPower(-power);
+            leftBack.setPower(power);
+            rightFront.setPower(power);
+            rightBack.setPower(-power);
+
+            telemetry.addData("currently running","");
+            telemetry.update();
+        }
+
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
     }
 }

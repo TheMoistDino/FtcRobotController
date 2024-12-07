@@ -22,7 +22,7 @@ public class ServoControl
 
     ///// Create and Define Motion Variables
     static boolean isGrab, isDumped;
-    static final double closeClawPos = 0.34, // Change to closed claw position
+    static final double closeClawPos = 0.31, // Change to closed claw position
                         openClawPos  = 0.0, // Change to open claw position
                         notDumpedPos = 0.9, // Change to not dumped position
                         dumpedPos = 0.0; // Change to dumped position
@@ -60,7 +60,7 @@ public class ServoControl
         ServoControl.telemetry = telemetry;
 
         // Display Message on Screen
-        telemetry.addData("initializing", "servos");
+        telemetry.addData("servos", "initializing");
     }
 
     // This method is used to "turn on" the servos (help prevent movement between AUTO and TELEOP periods)
@@ -78,7 +78,7 @@ public class ServoControl
         bucket.setPosition(notDumpedPos);
 
         // Display Message on Screen
-        telemetry.addData("starting", "servos");
+        telemetry.addData("servos", "started");
     }
 
     // This method is used to "turn off" the servos (help prevent movement between AUTO and TELEOP periods)
@@ -100,8 +100,8 @@ public class ServoControl
         runtime.reset();
 
         // Open/Close the Claw
-        claw.setPosition(isGrab ? openClawPos : closeClawPos);
         isGrab = !isGrab;
+        claw.setPosition(isGrab ? openClawPos : closeClawPos);
 
         // Give time for the servo to run to position
         while(runtime.milliseconds() < timeout)
@@ -120,8 +120,8 @@ public class ServoControl
         runtime.reset();
 
         // Open/Close the Claw
-        bucket.setPosition(isDumped ? dumpedPos : notDumpedPos);
         isDumped = !isDumped;
+        bucket.setPosition(isDumped ? dumpedPos : notDumpedPos);
 
         // Give time for the servo to run to position
         while(runtime.milliseconds() < timeout)

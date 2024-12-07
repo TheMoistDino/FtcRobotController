@@ -17,9 +17,18 @@ This GitHub repo includes the source code used in 6373 SuperBots competition rob
 - Left Bumper = Slow Lift
 - A = Slow Arm
 - B = Toggle liftDebug mode
-- XBack = Reset lift position to zero
+- Back = Reset lift position to zero
 
 ## Change Log
+### Meet 2 (12/7, 16:00)
+* LOTS OF CHANGES OCCURRED
+* Re-organized AUTO files
+  * Put old AUTO code into a dedicated folder
+* Created new AUTO programs
+  * Simplified versions with timers instead of encoders, works well enough in comp
+  * AutoMeetTwoL,LNP,R
+* Bugfixed and separated controls in TELEOP programs
+
 ### Meet 1 (11/16, 7:00)
 
 ### 4 Entity/Robot MeepMeep Simulator (11/10, 22:00)

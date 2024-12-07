@@ -8,8 +8,8 @@ import org.firstinspires.ftc.teamcode.control.HolonomicDrive;
 import org.firstinspires.ftc.teamcode.control.MotorControl;
 import org.firstinspires.ftc.teamcode.control.ServoControl;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Meet 2 TeleOp", group = "TeleOp")
-public class TeleOp extends LinearOpMode
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Meet 1 TeleOp", group = "TeleOp")
+public class TeleOpMeet1 extends LinearOpMode
 {
     // Variables for Method Calling
     HolonomicDrive holonomicDrive;
@@ -102,23 +102,23 @@ public class TeleOp extends LinearOpMode
             //////////////////////
 
             // Button to control the claw servo
-            if(currentGamepad2.left_bumper && !previousGamepad2.left_bumper)
-            {
-                servoControl.Grab();
-            }
-
-            // Button to control the bucket servo
-            if(currentGamepad2.right_bumper && !previousGamepad2.right_bumper)
+            if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper)
             {
                 servoControl.Dump();
             }
 
+            // Button to control the bucket servo
+            if(currentGamepad1.right_bumper && !previousGamepad1.right_bumper)
+            {
+                servoControl.Grab();
+            }
+
             // Determine the desired lift direction based on trigger input
-            if (gamepad2.right_trigger != 0 && (liftDebug || motorControl.currentLiftPos < motorControl.maxLiftPos))
+            if (gamepad1.right_trigger != 0 && (liftDebug || motorControl.currentLiftPos < motorControl.maxLiftPos))
             {
                 motorControl.MoveLift(MotorControl.LiftDirection.up, LIFT_SPEED_MULTIPLIER);
             }
-            else if (gamepad2.left_trigger != 0 && (liftDebug || motorControl.currentLiftPos > motorControl.minLiftPos))
+            else if (gamepad1.left_trigger != 0 && (liftDebug || motorControl.currentLiftPos > motorControl.minLiftPos))
             {
                 motorControl.MoveLift(MotorControl.LiftDirection.down, LIFT_SPEED_MULTIPLIER);
             }
@@ -134,16 +134,16 @@ public class TeleOp extends LinearOpMode
             }
 
             // Buttons to move arm up/down
-            if(gamepad2.a)
+            if(gamepad1.dpad_up)
             {
                 motorControl.ArmControl(MotorControl.ArmDirection.forward, ARM_SPEED_MULTIPLIER);
             }
-            else if(gamepad2.dpad_down)
+            else if(gamepad1.dpad_down)
             {
                 motorControl.ArmControl(MotorControl.ArmDirection.backward, ARM_SPEED_MULTIPLIER);
             }
             // Buttons to setup arm to enter submersible
-            else if((!gamepad2.dpad_up) && (!gamepad2.dpad_down))
+            else if((!gamepad1.dpad_up) && (!gamepad1.dpad_down))
             {
                 motorControl.ArmControl(MotorControl.ArmDirection.setup, ARM_SPEED_MULTIPLIER);
             }
@@ -165,11 +165,10 @@ public class TeleOp extends LinearOpMode
             {
                 // Reset lift position
                 motorControl.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                motorControl.lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
 
             // Button to slow driving
-            if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper)
+            if(currentGamepad2.left_bumper && !previousGamepad2.left_bumper)
             {
                 driveSlow = !driveSlow;
             }
@@ -178,17 +177,6 @@ public class TeleOp extends LinearOpMode
             if(currentGamepad2.start && !previousGamepad2.start)
             {
                 liftSlow = !liftSlow;
-            }
-
-            ///// Presets
-            if(currentGamepad2.dpad_right && !previousGamepad2.dpad_right)
-            {
-                motorControl.LiftToPosition(MotorControl.LiftHeight.high_basket, 4.5);
-            }
-
-            if(currentGamepad2.dpad_left && !previousGamepad2.dpad_left)
-            {
-                motorControl.LiftToPosition(MotorControl.LiftHeight.zero, 4.5);
             }
 
             // Button to slow arm

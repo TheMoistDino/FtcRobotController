@@ -31,7 +31,7 @@ public class MotorControl
     public int maxLiftPos = 11200;
     public enum LiftDirection {up, down}
     public enum LiftHeight {high_basket, low_basket, high_chamber, low_chamber, zero}
-    int high_basket_pos = 9000, low_basket_pos = 5000,
+    int high_basket_pos = 10600, low_basket_pos = 5000,
         high_chamber_pos = 7000, low_chamber_pos = 3000,
         zero_pos = 0;
 
@@ -102,7 +102,7 @@ public class MotorControl
         armPIDController = new PIDController(armPIDF[0],armPIDF[1],armPIDF[2]);
 
         // Display Message on Screen
-        telemetry.addData("initializing", "motors");
+        telemetry.addData("motors", "initializing");
     }
 
     // This method is used to lock the position of the lift
@@ -205,20 +205,21 @@ public class MotorControl
     // This method is used to make the lift go to a specified position
     public void LiftToPosition(LiftHeight liftHeight, double timeoutSeconds)
     {
-        int target;
-
         // Get the target position
-        target = liftPositions.getOrDefault(liftHeight, 0);
+        int target = liftPositions.getOrDefault(liftHeight, 0);
+
+        liftPIDController.setPID(liftPIDF[0],liftPIDF[1],liftPIDF[2]);
 
         // Initialize the lift motor to the correct mode (to maximize power)
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         // Resets timer
         runtime.reset();
 
         // Gets the position of the lift motor
         currentLiftPos = lift.getCurrentPosition();
 
-        while ((runtime.seconds() < timeoutSeconds) && (lift.isBusy()))
+        while ((runtime.seconds() > 0) && (runtime.seconds() < timeoutSeconds))
         {
             // Gets position of lift motor
             currentLiftPos = lift.getCurrentPosition();
@@ -234,7 +235,9 @@ public class MotorControl
             isLiftRunning = true;
 
             // Update current state to telemetry
-            telemetry.addData("currently running","");
+            telemetry.addData("currently running for", runtime.seconds());
+            telemetry.addData("current position", lift.getCurrentPosition());
+            telemetry.addData("target",target);
             telemetry.update();
         }
 
@@ -244,6 +247,7 @@ public class MotorControl
         isLiftRunning = false;
 
         telemetry.addData("final position", lift.getCurrentPosition());
+        telemetry.addData("target",target);
         telemetry.update();
     }
 

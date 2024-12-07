@@ -6,24 +6,27 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
-@Disabled
 @Config
 @TeleOp(name = "Servo Tuner", group = "Test")
 public class servoTuner extends OpMode {
     public static double target_claw = 0.0;
-    public static double target_bucket = 1.0;
+    public static double target_bucket = 0.0;
 
     Servo claw;
-    Servo bucket;
+    ServoImplEx bucket;
 
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         claw = hardwareMap.get(Servo.class, "claw");
-        bucket = hardwareMap.get(Servo.class, "bucket");
+        bucket = hardwareMap.get(ServoImplEx.class, "bucket");
+
+        bucket.setPwmRange(new PwmControl.PwmRange(500,2500));
     }
 
     @Override
