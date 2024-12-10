@@ -106,12 +106,12 @@ public class HolonomicDrive
         rightBack .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Display Message on Screen
-        telemetry.addData("initializing", "motors");
+        telemetry.addData("Motors", "Initialized");
 
         // Reverse Motor Directions for Positive Values
         leftBack .setDirection(DcMotor.Direction.REVERSE);
         leftFront.setDirection(DcMotor.Direction.REVERSE);
-        telemetry.addData("reversing", "motors");
+        telemetry.addData("Motors", "Reversed");
     }
 
     // This method is used to initialize the drive motors' modes
@@ -233,6 +233,18 @@ public class HolonomicDrive
         // Display motor power
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFront_power, rightFront_power);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBack_power, rightBack_power);
+    }
+
+    public void ActiveDrive(double leftStickX, double leftStickY, double rightStickX, double SPEED_MULTIPLIER, boolean isFieldOriented)
+    {
+        if(isFieldOriented)
+        {
+            ActiveDriveFO(leftStickX, leftStickY, rightStickX, SPEED_MULTIPLIER);
+        }
+        else
+        {
+            ActiveDriveRO(leftStickX, leftStickY, rightStickX, SPEED_MULTIPLIER);
+        }
     }
 
     // This method is used to drive the robot forward some number of inches forward in Auto

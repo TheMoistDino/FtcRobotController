@@ -52,15 +52,15 @@ public class MotorControl
         double setup_angle = 550; // Set setup angle
         double max_armAngle = 720; // Set max angle
         double offsetAngle; // Set initial angle offset
-        double ticksToAngles = (360/1120);
+        double ticksToAngles = ((double) 360 /1120);
     public enum ArmDirection {forward, backward, setup}
 
     public boolean isArmRunning = false;
     /////
 
     ///// Create PIDF Variables
-    private PIDController armPIDController;
-    private PIDController liftPIDController;
+    private final PIDController armPIDController;
+    private final PIDController liftPIDController;
     private static final double[] armPIDF = {0,0.01,0,0.004}; // index 0 = p, 1 = i, 2 = d, 3 = f
     private static final double[] liftPIDF = {0.006,0,0,0}; // index 0 = p, 1 = i, 2 = d, 3 = f
     /////
@@ -238,7 +238,6 @@ public class MotorControl
             telemetry.addData("currently running for", runtime.seconds());
             telemetry.addData("current position", lift.getCurrentPosition());
             telemetry.addData("target",target);
-            telemetry.update();
         }
 
         // After the lift runs to position, it stops

@@ -20,6 +20,13 @@ This GitHub repo includes the source code used in 6373 SuperBots competition rob
 - Back = Reset lift position to zero
 
 ## Change Log
+### Testing AdvGamepad.java to streamline TELEOP programming (12/9, 21:00)
+* Created AdvGamepad.java to reduce the redundant "if" statements in the TELEOP programs
+* Includes addAction function to correlate specific gamepad inputs directly to other functions
+  * Has two different types of inputs currently:
+    * onPress and onHold
+* Not sure if AdvGamepad works yet, so TeleOpTest.java was created
+
 ### Meet 2 (12/7, 16:00)
 * LOTS OF CHANGES OCCURRED
 * Re-organized AUTO files
