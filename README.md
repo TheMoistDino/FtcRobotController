@@ -4,22 +4,23 @@ This GitHub repo includes the source code used in 6373 SuperBots competition rob
 ## Robot Controls
 ### Gamepad 1
 - Left and Right Joysticks = Movement  (left for translational, right for rotational)
-- Right Bumper = Intake Claw
-- Left Bumper = Bucket
-- Right Trigger = Lift Up
-- Left Trigger = Lift Down
-- D-Pad Up = Arm Forward
-- D-Pad Down = Arm Backward
+- Start = Toggle Robot-Oriented to Field-Oriented
+- Left Bumper = Slow Driving
 
 ### Gamepad 2
-- Start Button = Toggle Robot-Oriented to Field-Oriented
-- Right Bumper = Slow Driving
-- Left Bumper = Slow Lift
-- A = Slow Arm
-- B = Toggle liftDebug mode
-- Back = Reset lift position to zero
+- Left Bumper = Intake Claw
+- Right Bumper = Bucket
+- D-Pad Down = Arm Backward
+- A = Arm Forward
+- Right Trigger = Lift Up
+- Left Trigger = Lift Down
+- B = Lift Debug
+- Start = Slow Lift
 
 ## Change Log
+### Revised AdvGamepad.java to GamepadEx.java (12/10, 20:15)
+* Simplified AdvGamepad and transferred to GamepadEx.java
+
 ### Testing AdvGamepad.java to streamline TELEOP programming (12/9, 21:00)
 * Created AdvGamepad.java to reduce the redundant "if" statements in the TELEOP programs
 * Includes addAction function to correlate specific gamepad inputs directly to other functions
@@ -35,6 +36,24 @@ This GitHub repo includes the source code used in 6373 SuperBots competition rob
   * Simplified versions with timers instead of encoders, works well enough in comp
   * AutoMeetTwoL,LNP,R
 * Bugfixed and separated controls in TELEOP programs
+
+### OLD Robot Controls
+### Gamepad 1
+- Left and Right Joysticks = Movement  (left for translational, right for rotational)
+- Right Bumper = Intake Claw
+- Left Bumper = Bucket
+- Right Trigger = Lift Up
+- Left Trigger = Lift Down
+- D-Pad Up = Arm Forward
+- D-Pad Down = Arm Backward
+
+### Gamepad 2
+- Start Button = Toggle Robot-Oriented to Field-Oriented
+- Right Bumper = Slow Driving
+- Left Bumper = Slow Lift
+- A = Slow Arm
+- B = Toggle liftDebug mode
+- Back = Reset lift position to zero
 
 ### Meet 1 (11/16, 7:00)
 
