@@ -125,6 +125,7 @@ public class AdvGamepad
                 input.ordinal() <= GamepadInput.back.ordinal()) {
             try {
                 // Use reflection to get the button value
+
                 return (boolean) current.getClass().getField(input.name()).get(current);
             } catch (Exception e) {
                 return false; // Handle exceptions (e.g., field not found)

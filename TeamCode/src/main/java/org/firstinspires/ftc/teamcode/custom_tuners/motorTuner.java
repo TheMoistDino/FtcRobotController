@@ -26,7 +26,7 @@ public class motorTuner extends OpMode {
         controller = new PIDController(kP,kI,kD);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        motor = hardwareMap.get(DcMotorEx.class, "arm");
+        motor = hardwareMap.get(DcMotorEx.class, "lift");
         motor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
@@ -36,13 +36,13 @@ public class motorTuner extends OpMode {
         controller.setPID(kP,kI,kD);
 
         // Gets positions of motor
-        int armPos = motor.getCurrentPosition();
+        int liftPos = motor.getCurrentPosition();
 
         // Calculates how much to go based on the position to run to the target
-        double pid = controller.calculate(armPos, target);
+        double pid = controller.calculate(liftPos, target);
 
         // Calculates Feed Forward so the robot adjusts against resisting forces
-        double ff = (target - armPos) * kF;
+        double ff = (target - liftPos) * kF;
 
         // Calculates power for motor
         double power = pid + ff;
@@ -51,7 +51,7 @@ public class motorTuner extends OpMode {
         motor.setPower(power);
 
         // Adds data to the telemetry/driver hub
-        telemetry.addData("pos", armPos);
+        telemetry.addData("pos", liftPos);
         telemetry.addData("target", target);
         telemetry.update();
     }

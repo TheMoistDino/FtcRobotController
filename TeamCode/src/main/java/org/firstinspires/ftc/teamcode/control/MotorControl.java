@@ -28,11 +28,11 @@ public class MotorControl
     double max_liftPower = 1.0;
     public int currentLiftPos;
     public int minLiftPos = 0;
-    public int maxLiftPos = 11200;
+    public int maxLiftPos = 4100;
     public enum LiftDirection {up, down}
     public enum LiftHeight {high_basket, low_basket, high_chamber, low_chamber, zero}
-    int high_basket_pos = 10600, low_basket_pos = 5000,
-        high_chamber_pos = 7000, low_chamber_pos = 3000,
+    int high_basket_pos = 3950, low_basket_pos = 1950,
+        high_chamber_pos = 3000, low_chamber_pos = 1000,
         zero_pos = 0;
 
     public boolean isLiftRunning = false;
@@ -108,7 +108,6 @@ public class MotorControl
     // This method is used to lock the position of the lift
     public void LockLift()
     {
-        liftPower = 0;
         currentLiftPos = lift.getCurrentPosition();
         lift.setTargetPosition(currentLiftPos);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -122,7 +121,7 @@ public class MotorControl
         int distanceToMax = Math.abs(currentLiftPos - maxLiftPos);
 
         // Determine the closest limit
-        int targetPosition = (distanceToMin < distanceToMax) ? (minLiftPos + 50) : (maxLiftPos - 50);
+        int targetPosition = (distanceToMin < distanceToMax) ? (minLiftPos + 20) : (maxLiftPos - 20);
 
         // Move the lift to the closest limit
         lift.setTargetPosition(targetPosition);
