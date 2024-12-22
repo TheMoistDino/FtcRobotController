@@ -31,7 +31,7 @@ public class MotorControl
     public int maxLiftPos = 4100;
     public enum LiftDirection {up, down}
     public enum LiftHeight {high_basket, low_basket, high_chamber, low_chamber, zero}
-    int high_basket_pos = 3950, low_basket_pos = 1950,
+    int high_basket_pos = 4100, low_basket_pos = 1950,
         high_chamber_pos = 3000, low_chamber_pos = 1000,
         zero_pos = 0;
 
@@ -79,6 +79,7 @@ public class MotorControl
         // Instantiate Motor Objects
         MotorControl.lift = hardwareMap.get(DcMotor.class, liftName);
         MotorControl.arm  = hardwareMap.get(DcMotor.class, armName);
+        lift.setDirection(DcMotor.Direction.REVERSE);
         arm.setDirection(DcMotor.Direction.REVERSE);
         // Instantiate Telemetry
         MotorControl.telemetry = telemetry;
@@ -147,10 +148,10 @@ public class MotorControl
         switch (liftDirection)
         {
             case up:
-                liftPower += liftAccel * (max_liftPower - liftPower);
+                liftPower = 1;
                 break;
             case down:
-                liftPower -= liftAccel * (max_liftPower - liftPower);
+                liftPower = -1;
                 break;
         }
 
@@ -188,10 +189,10 @@ public class MotorControl
         switch (direction)
         {
             case forward:
-                armPower = 0.4;
+                armPower = 0.5;
                 break;
             case backward:
-                armPower = -0.4;
+                armPower = -0.5;
                 break;
             case setup:
                 armPower = 0;

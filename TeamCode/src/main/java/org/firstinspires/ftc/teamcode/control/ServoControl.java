@@ -22,7 +22,7 @@ public class ServoControl
 
     ///// Create and Define Motion Variables
     static boolean isGrab, isDumped;
-    static final double closeClawPos = 0.31, // Change to closed claw position
+    static final double closeClawPos = 0.34, // Change to closed claw position
                         openClawPos  = 0.0, // Change to open claw position
                         notDumpedPos = 0.9, // Change to not dumped position
                         dumpedPos = 0.0; // Change to dumped position

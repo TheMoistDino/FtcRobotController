@@ -120,7 +120,7 @@ public class TeleOp extends LinearOpMode
             }
             else if (gamepad2.left_trigger != 0 && (liftDebug || motorControl.currentLiftPos > motorControl.minLiftPos))
             {
-                motorControl.MoveLift(MotorControl.LiftDirection.down, (LIFT_SPEED_MULTIPLIER * 0.7));
+                motorControl.MoveLift(MotorControl.LiftDirection.down, (LIFT_SPEED_MULTIPLIER * 0.5));
             }
             else
             {

@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.control.HolonomicDrive;
 import org.firstinspires.ftc.teamcode.control.MotorControl;
 import org.firstinspires.ftc.teamcode.control.ServoControl;
 
-@Autonomous(name = "Meet 2: Left No Park", group = "Auto")
+@Autonomous(name = "Meet 2: Left No Park", group = "Auto", preselectTeleOp = "Meet 2 TeleOp")
 public class AutoMeetTwoLNP extends LinearOpMode
 {
     // Variables used for Method Calling
@@ -35,14 +35,14 @@ public class AutoMeetTwoLNP extends LinearOpMode
         // Wait for the play button to be pressed
         waitForStart();
 
-        motorControl.LiftToPosition(MotorControl.LiftHeight.high_basket, 4.5);
+        motorControl.LiftToPosition(MotorControl.LiftHeight.high_basket, 1.75);
         //sleep(3000);
         holonomicDrive.TimerStraight(-0.2, 3);
         servoControl.Dump();
         sleep(500);
         servoControl.Dump();
         holonomicDrive.TimerStraight(0.2, 2);
-        motorControl.LiftToPosition(MotorControl.LiftHeight.zero, 4.5);
+        motorControl.LiftToPosition(MotorControl.LiftHeight.zero, 1.75);
         //sleep(3000);
         //holonomicDrive.TimerStraight(0.4, 3.0);
     }

@@ -16,16 +16,17 @@ public class servoTuner extends OpMode {
     public static double target_claw = 0.0;
     public static double target_bucket = 0.0;
 
-    Servo claw;
+    ServoImplEx claw;
     ServoImplEx bucket;
 
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        claw = hardwareMap.get(Servo.class, "claw");
+        claw = hardwareMap.get(ServoImplEx.class, "claw");
         bucket = hardwareMap.get(ServoImplEx.class, "bucket");
-
+    
+        claw.setPwmRange(new PwmControl.PwmRange(700,2200));
         bucket.setPwmRange(new PwmControl.PwmRange(500,2500));
     }
 

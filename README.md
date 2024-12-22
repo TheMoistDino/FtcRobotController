@@ -4,20 +4,24 @@ This GitHub repo includes the source code used in 6373 SuperBots competition rob
 ## Robot Controls
 ### Gamepad 1
 - Left and Right Joysticks = Movement  (left for translational, right for rotational)
-- Start = Toggle Robot-Oriented to Field-Oriented
-- Left Bumper = Slow Driving
-
-### Gamepad 2
-- Left Bumper = Intake Claw
-- Right Bumper = Bucket
-- D-Pad Down = Arm Backward
-- A = Arm Forward
+- Right Bumper = Intake Claw
+- Left Bumper = Bucket
 - Right Trigger = Lift Up
 - Left Trigger = Lift Down
-- B = Lift Debug
-- Start = Slow Lift
+- D-Pad Up = Arm Forward
+- D-Pad Down = Arm Backward
+
+### Gamepad 2
+- Start Button = Toggle Robot-Oriented to Field-Oriented
+- Right Bumper = Slow Driving
+- Left Bumper = Slow Lift
+- A = Slow Arm
+- B = Toggle liftDebug mode
+- Back = Reset lift position to zero
 
 ## Change Log
+### Small changes/bugfixes after switching lift motor (12/22, 00:10)
+
 ### Revised AdvGamepad.java to GamepadEx.java (12/10, 20:15)
 * Simplified AdvGamepad and transferred to GamepadEx.java
 
@@ -36,24 +40,6 @@ This GitHub repo includes the source code used in 6373 SuperBots competition rob
   * Simplified versions with timers instead of encoders, works well enough in comp
   * AutoMeetTwoL,LNP,R
 * Bugfixed and separated controls in TELEOP programs
-
-### OLD Robot Controls
-### Gamepad 1
-- Left and Right Joysticks = Movement  (left for translational, right for rotational)
-- Right Bumper = Intake Claw
-- Left Bumper = Bucket
-- Right Trigger = Lift Up
-- Left Trigger = Lift Down
-- D-Pad Up = Arm Forward
-- D-Pad Down = Arm Backward
-
-### Gamepad 2
-- Start Button = Toggle Robot-Oriented to Field-Oriented
-- Right Bumper = Slow Driving
-- Left Bumper = Slow Lift
-- A = Slow Arm
-- B = Toggle liftDebug mode
-- Back = Reset lift position to zero
 
 ### Meet 1 (11/16, 7:00)
 
