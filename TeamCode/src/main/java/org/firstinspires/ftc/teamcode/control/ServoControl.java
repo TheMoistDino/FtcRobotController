@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.control;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -10,22 +9,37 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class ServoControl
 {
     ///// Create Servo Variables
-    static ServoImplEx claw, bucket;
-    static ServoImplEx slide;
+    static ServoImplEx slideLeft, slideRight;
+    static ServoImplEx pitch, roll, clawIntake, clawOuttake;
     /////
 
     ///// Name of Servos on Driver Hub
-    private static final String clawName = "claw",
-                                bucketName = "bucket";
-    private static final String slideName = "slide";
+    private static final String slideLeftName = "slideLeft",
+                                slideRightName = "slideRight";
+    private static final String pitchName = "pitch",
+                                rollName = "roll",
+                                clawIntakeName = "clawIntake",
+                                clawOuttakeName = "clawOuttake";
     /////
 
     ///// Create and Define Motion Variables
-    static boolean isGrab, isDumped;
-    static final double closeClawPos = 0.34, // Change to closed claw position
-                        openClawPos  = 0.0, // Change to open claw position
-                        notDumpedPos = 0.9, // Change to not dumped position
-                        dumpedPos = 0.0; // Change to dumped position
+    static boolean isGrabIntake, isGrabOuttake, isPitchOut;
+    public enum SlidesPosition {zero, half, max}
+    public enum SlidesDirection {in, out}
+    public enum RollDirection {left, right}
+    static final double clawIntakeClosePos = 0.46, // Change to closed claw position
+                        clawIntakeOpenPos  = 0.13, // Change to open claw position
+                        clawOuttakeClosePos = 0.08, // Change to closed claw position
+                        clawOuttakeOpenPos = 0.0, // Change to open claw position
+                        slideLeftZeroPos = 1.0,
+                        slideLeftHalfPos = 0.8,
+                        slideLeftMaxPos = 0.6,
+                        slideRightZeroPos = 0.0,
+                        slideRightHalfPos = 0.2,
+                        slideRightMaxPos = 0.4,
+                        pitchOutPos = 0.18,
+                        pitchInPos = 0.95,
+                        rollDefaultPos = 0.65;
     /////
 
     ///// Create and Define Timer Variables to let the servos have time to run to position
@@ -43,21 +57,22 @@ public class ServoControl
     public ServoControl(HardwareMap hardwareMap, Telemetry telemetry)
     {
         // Instantiate Servo Objects
-        ServoControl.claw = hardwareMap.get(ServoImplEx.class, clawName);
-        ServoControl.bucket = hardwareMap.get(ServoImplEx.class, bucketName);
+        ServoControl.clawIntake = hardwareMap.get(ServoImplEx.class, clawIntakeName);
+        ServoControl.clawOuttake = hardwareMap.get(ServoImplEx.class, clawOuttakeName);
+        ServoControl.slideLeft = hardwareMap.get(ServoImplEx.class, slideLeftName);
+        ServoControl.slideRight = hardwareMap.get(ServoImplEx.class, slideRightName);
 
-        // ServoControl.slide = hardwareMap.get(ServoImplEx.class, slideName);
+        ServoControl.pitch = hardwareMap.get(ServoImplEx.class, pitchName);
+        ServoControl.roll = hardwareMap.get(ServoImplEx.class, rollName);
 
         // Increase max range of slide servo
         // slide.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
-        // Disable servo power by default
-        claw.setPwmDisable();
-        bucket.setPwmDisable();
-        // slide.setPwmDisable();
-
         // Instantiate Telemetry
         ServoControl.telemetry = telemetry;
+
+        // Disable servo power by default
+        StopServos();
 
         // Display Message on Screen
         telemetry.addData("servos", "initializing");
@@ -67,15 +82,24 @@ public class ServoControl
     public void StartServos()
     {
         // Enable servo power
-        claw.setPwmEnable();
-        bucket.setPwmEnable();
-        // slide.setPwmEnable();
+        clawIntake.setPwmEnable();
+        clawOuttake.setPwmEnable();
+        slideLeft.setPwmEnable();
+        slideRight.setPwmEnable();
+        pitch.setPwmEnable();
+        roll.setPwmEnable();
+
+        // Start the slides in initial positions
+        slideLeft.setPosition(slideLeftZeroPos);
+        slideRight.setPosition(slideRightZeroPos);
+        pitch.setPosition(pitchInPos);
+        roll.setPosition(rollDefaultPos);
 
         // Start the claw and bucket in initial positions
-        isGrab = false;
-        isDumped = false;
-        claw.setPosition(openClawPos);
-        bucket.setPosition(notDumpedPos);
+        isGrabIntake = false;
+        isGrabOuttake = false;
+        clawIntake.setPosition(clawIntakeOpenPos);
+        clawOuttake.setPosition(clawIntakeOpenPos);
 
         // Display Message on Screen
         telemetry.addData("servos", "started");
@@ -85,8 +109,12 @@ public class ServoControl
     public void StopServos()
     {
         // Disable servo power
-        claw.setPwmDisable();
-        bucket.setPwmDisable();
+        clawIntake.setPwmDisable();
+        clawOuttake.setPwmDisable();
+        slideLeft.setPwmDisable();
+        slideRight.setPwmDisable();
+        pitch.setPwmDisable();
+        roll.setPwmDisable();
         // slide.setPwmDisable();
 
         // Display Message on Screen
@@ -94,34 +122,34 @@ public class ServoControl
     }
 
     // This method is used to open/close the claw servo
-    public void Grab()
+    public void GrabIntake()
     {
         // Restart timer
         runtime.reset();
 
-        // Open/Close the Claw
-        isGrab = !isGrab;
-        claw.setPosition(isGrab ? openClawPos : closeClawPos);
+        // Open/Close the Intake Claw
+        isGrabIntake = !isGrabIntake;
+        clawIntake.setPosition(isGrabIntake ? clawIntakeOpenPos : clawIntakeClosePos);
 
         // Give time for the servo to run to position
         while(runtime.milliseconds() < timeout)
         {
-            telemetry.addData("claw running for:", runtime.milliseconds());
+            telemetry.addData("intake claw running for:", runtime.milliseconds());
             telemetry.update();
         }
-        telemetry.addData("isGrab", isGrab);
+        telemetry.addData("isGrabIntake", isGrabIntake);
         telemetry.update();
     }
 
     // This method is used to dump the bucket servo
-    public void Dump()
+    public void GrabOuttake()
     {
         // Restart timer
         runtime.reset();
 
         // Open/Close the Claw
-        isDumped = !isDumped;
-        bucket.setPosition(isDumped ? dumpedPos : notDumpedPos);
+        isGrabOuttake = !isGrabOuttake;
+        clawOuttake.setPosition(isGrabOuttake ? clawOuttakeOpenPos : clawOuttakeClosePos);
 
         // Give time for the servo to run to position
         while(runtime.milliseconds() < timeout)
@@ -129,7 +157,79 @@ public class ServoControl
             telemetry.addData("bucket running for:", runtime.milliseconds());
             telemetry.update();
         }
-        telemetry.addData("isDumped", isDumped);
+        telemetry.addData("isGrabOuttake", isGrabOuttake);
         telemetry.update();
+    }
+
+    public void PitchControl() {
+        // Restart timer
+        runtime.reset();
+
+        // Open/Close the Claw
+        isPitchOut = !isPitchOut;
+        pitch.setPosition(isPitchOut ? pitchOutPos : pitchInPos);
+
+        // Give time for the servo to run to position
+        while (runtime.milliseconds() < timeout) {
+            telemetry.addData("bucket running for:", runtime.milliseconds());
+            telemetry.update();
+        }
+        telemetry.addData("isPitchOut", isPitchOut);
+        telemetry.update();
+    }
+
+    public void SlidesPreset(SlidesPosition position) {
+        // Restart timer
+        runtime.reset();
+
+        if (position == SlidesPosition.zero)
+        {
+            slideLeft.setPosition(slideLeftZeroPos);
+            slideRight.setPosition(slideRightZeroPos);
+        }
+        else if (position == SlidesPosition.half)
+        {
+            slideLeft.setPosition(slideLeftHalfPos);
+            slideRight.setPosition(slideRightHalfPos);
+        }
+        else if (position == SlidesPosition.max)
+        {
+            slideLeft.setPosition(slideLeftMaxPos);
+            slideRight.setPosition(slideRightMaxPos);
+        }
+
+        // Give time for the servo to run to position
+        while (runtime.milliseconds() < timeout) {
+            telemetry.addData("slides", runtime.milliseconds());
+            telemetry.update();
+        }
+        telemetry.addData("slides:", position);
+        telemetry.update();
+    }
+
+    public void SlidesControl(SlidesDirection direction)
+    {
+        if (direction == SlidesDirection.in)
+        {
+            slideLeft.setPosition(slideLeft.getPosition() + 0.03);
+            slideRight.setPosition(slideRight.getPosition() - 0.03);
+        }
+        else
+        {
+            slideLeft.setPosition(slideLeft.getPosition() - 0.03);
+            slideRight.setPosition(slideRight.getPosition() + 0.03);
+        }
+    }
+
+    public void RollControl(RollDirection direction)
+    {
+        if (direction == RollDirection.left)
+        {
+            roll.setPosition(roll.getPosition() + 0.05);
+        }
+        else
+        {
+            roll.setPosition(roll.getPosition() - 0.05);
+        }
     }
 }

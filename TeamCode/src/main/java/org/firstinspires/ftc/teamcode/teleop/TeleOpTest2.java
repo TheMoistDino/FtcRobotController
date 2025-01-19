@@ -77,8 +77,8 @@ public class TeleOpTest2 extends LinearOpMode
         gamepadEx2.addAction(start, onPress, () -> liftSlow = !liftSlow);
         gamepadEx2.addAction(b, onPress, () -> liftDebug = !liftDebug);
         gamepadEx2.addAction(back, onPress, () -> {
-            MotorControl.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            MotorControl.lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            MotorControl.liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            MotorControl.liftLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         });
 
         // Presets
@@ -91,10 +91,10 @@ public class TeleOpTest2 extends LinearOpMode
 
         // Servo Control
         gamepadEx2.addAction(right_bumper, onPress, () -> {
-            servo.Dump();
+            servo.GrabOuttake();
         });
         gamepadEx2.addAction(left_bumper, onPress, () -> {
-            servo.Grab();
+            servo.GrabIntake();
         });
         // Motor Control
         // Buttons to move arm forward/backward
@@ -154,10 +154,10 @@ public class TeleOpTest2 extends LinearOpMode
 
             telemetry.addData("Driving Mode", isFieldOriented ? "Field-Oriented" : "Robot-Oriented");
             telemetry.addData("Driving Speed", driveSlow ? "50%" : "100%");
-            telemetry.addData("Lift Position", MotorControl.lift.getCurrentPosition());
+            telemetry.addData("Lift Position", MotorControl.liftLeft.getCurrentPosition());
             telemetry.addData("Lift Debug Mode", liftDebug ? "On" : "Off");
             telemetry.addData("Lift Speed", liftSlow ? "50%" : "100%");
-            telemetry.addData("Arm Position", MotorControl.arm.getCurrentPosition());
+            telemetry.addData("Arm Position", MotorControl.outtakeArm.getCurrentPosition());
             telemetry.addData("Arm Speed", armSlow ? "50%" : "100%");
 
             telemetry.update();

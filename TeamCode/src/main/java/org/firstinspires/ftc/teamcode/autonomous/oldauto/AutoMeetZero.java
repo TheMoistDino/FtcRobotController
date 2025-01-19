@@ -40,9 +40,9 @@ public class AutoMeetZero extends LinearOpMode
         motorControl.LiftToPosition(MotorControl.LiftHeight.high_basket, 3);
         //sleep(3000);
         holonomicDrive.TimerStraight(-0.2, 3);
-        servoControl.Dump();
+        servoControl.GrabOuttake();
         sleep(500);
-        servoControl.Dump();
+        servoControl.GrabOuttake();
         holonomicDrive.TimerStraight(0.2, 2);
         motorControl.LiftToPosition(MotorControl.LiftHeight.zero, 3);
         //sleep(3000);

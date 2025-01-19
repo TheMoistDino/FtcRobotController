@@ -68,12 +68,12 @@ public class SampleTeleOp extends LinearOpMode
 
             if(gamepad1.right_bumper)
             {
-                servoControl.Grab();
+                servoControl.GrabIntake();
             }
 
             if(gamepad1.left_bumper)
             {
-                servoControl.Dump();
+                servoControl.GrabOuttake();
             }
 
             // Buttons to move lift up/down

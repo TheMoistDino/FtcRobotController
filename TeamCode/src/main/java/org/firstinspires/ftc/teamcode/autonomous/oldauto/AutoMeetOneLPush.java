@@ -148,7 +148,7 @@ public class AutoMeetOneLPush extends LinearOpMode
         {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                servoControl.Grab();
+                servoControl.GrabIntake();
                 return false;
             }
         }
@@ -164,7 +164,7 @@ public class AutoMeetOneLPush extends LinearOpMode
         {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                servoControl.Dump();
+                servoControl.GrabOuttake();
                 sleep(500);
                 return false;
             }

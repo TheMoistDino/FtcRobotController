@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.control.HolonomicDrive;
 import org.firstinspires.ftc.teamcode.control.MotorControl;
 import org.firstinspires.ftc.teamcode.control.ServoControl;
 
+@Disabled
 @Autonomous(name = "Meet 2: Left", group = "Auto", preselectTeleOp = "Meet 2 TeleOp")
 public class AutoMeetTwoL extends LinearOpMode
 {
@@ -37,13 +39,13 @@ public class AutoMeetTwoL extends LinearOpMode
 
         motorControl.LiftToPosition(MotorControl.LiftHeight.high_basket, 1.75);
         //sleep(3000);
-        holonomicDrive.TimerStraight(-0.2, 3);
-        servoControl.Dump();
+        holonomicDrive.TimerStraight(-0.3, 2.25);
+        servoControl.GrabOuttake();
         sleep(500);
-        servoControl.Dump();
+        servoControl.GrabOuttake();
         holonomicDrive.TimerStraight(0.2, 2);
         motorControl.LiftToPosition(MotorControl.LiftHeight.zero, 1.75);
         //sleep(3000);
-        holonomicDrive.TimerStraight(0.4, 3.0);
+        holonomicDrive.TimerStraight(0.4, 3.5);
     }
 }

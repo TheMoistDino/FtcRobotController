@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.control.HolonomicDrive;
 import org.firstinspires.ftc.teamcode.control.MotorControl;
 import org.firstinspires.ftc.teamcode.control.ServoControl;
 
+@Disabled
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Meet 2 TeleOp", group = "TeleOp")
 public class TeleOp extends LinearOpMode
 {
@@ -104,13 +106,13 @@ public class TeleOp extends LinearOpMode
             // Button to control the claw servo
             if(currentGamepad2.left_bumper && !previousGamepad2.left_bumper)
             {
-                servoControl.Grab();
+                servoControl.GrabIntake();
             }
 
             // Button to control the bucket servo
             if(currentGamepad2.right_bumper && !previousGamepad2.right_bumper)
             {
-                servoControl.Dump();
+                servoControl.GrabOuttake();
             }
 
             // Determine the desired lift direction based on trigger input
@@ -164,8 +166,8 @@ public class TeleOp extends LinearOpMode
             if(currentGamepad2.back && !previousGamepad2.back)
             {
                 // Reset lift position
-                motorControl.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                motorControl.lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motorControl.liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorControl.liftLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
 
             // Button to slow driving
@@ -206,10 +208,10 @@ public class TeleOp extends LinearOpMode
 
             telemetry.addData("Driving Mode", isFieldOriented ? "Field-Oriented" : "Robot-Oriented");
             telemetry.addData("Driving Speed", driveSlow ? "50%" : "100%");
-            telemetry.addData("Lift Position", motorControl.lift.getCurrentPosition());
+            telemetry.addData("Lift Position", motorControl.liftLeft.getCurrentPosition());
             telemetry.addData("Lift Debug Mode", liftDebug ? "On" : "Off");
             telemetry.addData("Lift Speed", liftSlow ? "50%" : "100%");
-            telemetry.addData("Arm Position", motorControl.arm.getCurrentPosition());
+            telemetry.addData("Arm Position", motorControl.outtakeArm.getCurrentPosition());
             telemetry.addData("Arm Speed", armSlow ? "50%" : "100%");
 
             telemetry.update();

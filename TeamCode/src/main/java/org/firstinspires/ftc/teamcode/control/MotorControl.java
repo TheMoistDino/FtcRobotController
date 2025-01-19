@@ -13,12 +13,13 @@ import java.util.Map;
 public class MotorControl
 {
     ///// Create Motor Variables
-    public static DcMotor lift, arm;
+    public static DcMotor liftLeft, liftRight, outtakeArm;
     /////
 
     ///// Name of Control Motors on Driver Hub
-    private static final String liftName = "lift",
-                                armName = "arm";
+    private static final String liftLeftName = "liftLeft",
+                                liftRightName = "liftRight",
+                                outtakeArmName = "outtakeArm";
     /////
 
     ///// Create and Define Motion Variables
@@ -43,7 +44,7 @@ public class MotorControl
     // Arm Variables
     double armAccel = 0.25;
     double armPower = 0.0;
-    double max_armPower;
+    double max_armPower = 0.3;
     public int currentArmPos;
 
         // Arm Angle Variables
@@ -77,10 +78,11 @@ public class MotorControl
     public MotorControl(HardwareMap hardwareMap, Telemetry telemetry)
     {
         // Instantiate Motor Objects
-        MotorControl.lift = hardwareMap.get(DcMotor.class, liftName);
-        MotorControl.arm  = hardwareMap.get(DcMotor.class, armName);
-        lift.setDirection(DcMotor.Direction.REVERSE);
-        arm.setDirection(DcMotor.Direction.REVERSE);
+        MotorControl.liftLeft = hardwareMap.get(DcMotor.class, liftLeftName);
+        MotorControl.liftRight = hardwareMap.get(DcMotor.class, liftRightName);
+        MotorControl.outtakeArm = hardwareMap.get(DcMotor.class, outtakeArmName);
+        liftRight.setDirection(DcMotor.Direction.REVERSE);
+        outtakeArm.setDirection(DcMotor.Direction.REVERSE);
         // Instantiate Telemetry
         MotorControl.telemetry = telemetry;
         // Initialize the Map for liftPositions
@@ -91,12 +93,14 @@ public class MotorControl
         liftPositions.put(LiftHeight.zero, zero_pos);
 
         // If the joysticks aren't touched, the robot won't move (set to BRAKE)
-        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        arm .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtakeArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Reset Motor Encoders
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm .setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outtakeArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Set PIDControllers to the variables in the array
         liftPIDController = new PIDController(liftPIDF[0],liftPIDF[1],liftPIDF[2]);
@@ -109,10 +113,11 @@ public class MotorControl
     // This method is used to lock the position of the lift
     public void LockLift()
     {
-        currentLiftPos = lift.getCurrentPosition();
-        lift.setTargetPosition(currentLiftPos);
-        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lift.setPower(max_liftPower);
+        currentLiftPos = liftLeft.getCurrentPosition();
+        liftLeft.setTargetPosition(currentLiftPos);
+        liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftLeft.setPower(max_liftPower);
+        liftRight.setPower(0);
     }
 
     public void StopAndReturnLift()
@@ -125,25 +130,25 @@ public class MotorControl
         int targetPosition = (distanceToMin < distanceToMax) ? (minLiftPos + 20) : (maxLiftPos - 20);
 
         // Move the lift to the closest limit
-        lift.setTargetPosition(targetPosition);
-        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lift.setPower(max_liftPower); // Assuming you have a max_liftPower variable
+        liftLeft.setTargetPosition(targetPosition);
+        liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftLeft.setPower(max_liftPower); // Assuming you have a max_liftPower variable
     }
 
     // This method is used to lock the position of the arm
     public void LockArm()
     {
         armPower = 0;
-        currentArmPos = arm.getCurrentPosition();
-        arm.setTargetPosition(currentArmPos);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        arm.setPower(max_armPower);
+        currentArmPos = outtakeArm.getCurrentPosition();
+        outtakeArm.setTargetPosition(currentArmPos);
+        outtakeArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        outtakeArm.setPower(max_armPower);
     }
 
     // This method is used to move the lift
     public void MoveLift(LiftDirection liftDirection, double LIFT_SPEED)
     {
-        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         switch (liftDirection)
         {
@@ -155,20 +160,21 @@ public class MotorControl
                 break;
         }
 
-        lift.setPower(liftPower * LIFT_SPEED);
+        liftLeft.setPower(liftPower * LIFT_SPEED * 0.9);
+        liftRight.setPower(liftPower * LIFT_SPEED);
 
-        currentLiftPos = lift.getCurrentPosition();
+        currentLiftPos = liftLeft.getCurrentPosition();
     }
 
     // This method is used to move the arm
     public void MoveArm(ArmDirection armDirection, double LIFT_SPEED)
     {
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        outtakeArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         switch (armDirection)
         {
             case forward:
-                max_armPower = 0.3;
+                max_armPower = 0.2;
                 armPower += armAccel * (max_armPower - armPower);
                 break;
             case backward:
@@ -177,28 +183,28 @@ public class MotorControl
                 break;
         }
 
-        arm.setPower(armPower * LIFT_SPEED);
+        outtakeArm.setPower(max_armPower * LIFT_SPEED);
 
-        currentArmPos = arm.getCurrentPosition();
+        currentArmPos = outtakeArm.getCurrentPosition();
     }
 
     public void ArmControl(ArmDirection direction, double armSpeed)
     {
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        outtakeArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         switch (direction)
         {
             case forward:
-                armPower = 0.5;
+                armPower = max_armPower;
                 break;
             case backward:
-                armPower = -0.5;
+                armPower = -max_armPower;
                 break;
             case setup:
                 armPower = 0;
         }
 
-        arm.setPower(armPower * armSpeed);
+        outtakeArm.setPower(armPower * armSpeed);
     }
 
 
@@ -211,18 +217,18 @@ public class MotorControl
         liftPIDController.setPID(liftPIDF[0],liftPIDF[1],liftPIDF[2]);
 
         // Initialize the lift motor to the correct mode (to maximize power)
-        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Resets timer
         runtime.reset();
 
         // Gets the position of the lift motor
-        currentLiftPos = lift.getCurrentPosition();
+        currentLiftPos = liftLeft.getCurrentPosition();
 
         while ((runtime.seconds() > 0) && (runtime.seconds() < timeoutSeconds))
         {
             // Gets position of lift motor
-            currentLiftPos = lift.getCurrentPosition();
+            currentLiftPos = liftLeft.getCurrentPosition();
 
             // Calculates the power of the lift motor
             double liftPID = liftPIDController.calculate(currentLiftPos, target);
@@ -230,22 +236,22 @@ public class MotorControl
 
             // Sets the power of the lift motor
             double power = liftPID + ff;
-            lift.setPower(power);
+            liftLeft.setPower(power);
 
             isLiftRunning = true;
 
             // Update current state to telemetry
             telemetry.addData("currently running for", runtime.seconds());
-            telemetry.addData("current position", lift.getCurrentPosition());
+            telemetry.addData("current position", liftLeft.getCurrentPosition());
             telemetry.addData("target",target);
         }
 
         // After the lift runs to position, it stops
-        lift.setPower(0);
+        liftLeft.setPower(0);
 
         isLiftRunning = false;
 
-        telemetry.addData("final position", lift.getCurrentPosition());
+        telemetry.addData("final position", liftLeft.getCurrentPosition());
         telemetry.addData("target",target);
         telemetry.update();
     }
@@ -254,17 +260,17 @@ public class MotorControl
     public void ArmToPosition(int target, double timeoutSeconds)
     {
         // Initialize the arm motor to the correct mode (to maximize power)
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        outtakeArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // Resets timer
         runtime.reset();
 
         // Gets the position of the lift motor
-        currentArmPos = arm.getCurrentPosition();
+        currentArmPos = outtakeArm.getCurrentPosition();
 
-        while ((runtime.seconds() < timeoutSeconds) && (arm.isBusy()))
+        while ((runtime.seconds() < timeoutSeconds) && (outtakeArm.isBusy()))
         {
             // Gets position of lift motor
-            currentArmPos = arm.getCurrentPosition();
+            currentArmPos = outtakeArm.getCurrentPosition();
 
             // Calculates the power of the lift motor
             double armPID = armPIDController.calculate(currentArmPos, target);
@@ -272,7 +278,7 @@ public class MotorControl
 
             // Sets the power of the lift motor
             double power = armPID + ff;
-            arm.setPower(power);
+            outtakeArm.setPower(power);
 
             isArmRunning = true;
 
@@ -282,11 +288,11 @@ public class MotorControl
         }
 
         // After the lift runs to position, it stops
-        arm.setPower(0);
+        outtakeArm.setPower(0);
 
         isArmRunning = false;
 
-        telemetry.addData("final position", arm.getCurrentPosition());
+        telemetry.addData("final position", outtakeArm.getCurrentPosition());
         telemetry.update();
     }
 }
