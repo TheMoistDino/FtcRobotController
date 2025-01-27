@@ -27,16 +27,16 @@ public class ServoControl
     public enum SlidesPosition {zero, half, max}
     public enum SlidesDirection {in, out}
     public enum RollDirection {left, right}
-    static final double clawIntakeClosePos = 0.46, // Change to closed claw position
-                        clawIntakeOpenPos  = 0.13, // Change to open claw position
-                        clawOuttakeClosePos = 0.08, // Change to closed claw position
-                        clawOuttakeOpenPos = 0.0, // Change to open claw position
-                        slideLeftZeroPos = 1.0,
+    static final double clawIntakeClosePos = 0.4, // Change to closed claw position
+                        clawIntakeOpenPos  = 0.15, // Change to open claw position
+                        clawOuttakeClosePos = 0.3, // Change to closed claw position
+                        clawOuttakeOpenPos = 0.05, // Change to open claw position
+                        slideLeftZeroPos = 0.95,
                         slideLeftHalfPos = 0.8,
                         slideLeftMaxPos = 0.6,
                         slideRightZeroPos = 0.0,
-                        slideRightHalfPos = 0.2,
-                        slideRightMaxPos = 0.4,
+                        slideRightHalfPos = 0.15,
+                        slideRightMaxPos = 0.35,
                         pitchOutPos = 0.18,
                         pitchInPos = 0.95,
                         rollDefaultPos = 0.65;

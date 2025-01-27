@@ -28,6 +28,7 @@ public class MotorControl
     double liftPower = 0.0;
     double max_liftPower = 1.0;
     public int currentLiftPos;
+    public int targetLiftPos = 0;
     public int minLiftPos = 0;
     public int maxLiftPos = 4100;
     public enum LiftDirection {up, down}
@@ -46,14 +47,6 @@ public class MotorControl
     double armPower = 0.0;
     double max_armPower = 0.3;
     public int currentArmPos;
-
-        // Arm Angle Variables
-        double Kcos; // Tune this value
-        double target_angle = 0; // Adjusted based on forward/backward
-        double setup_angle = 550; // Set setup angle
-        double max_armAngle = 720; // Set max angle
-        double offsetAngle; // Set initial angle offset
-        double ticksToAngles = ((double) 360 /1120);
     public enum ArmDirection {forward, backward, setup}
 
     public boolean isArmRunning = false;
@@ -99,7 +92,7 @@ public class MotorControl
 
         // Reset Motor Encoders
         liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtakeArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // Set PIDControllers to the variables in the array
@@ -114,10 +107,12 @@ public class MotorControl
     public void LockLift()
     {
         currentLiftPos = liftLeft.getCurrentPosition();
-        liftLeft.setTargetPosition(currentLiftPos);
+        liftLeft.setTargetPosition(targetLiftPos);
         liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftRight.setTargetPosition(targetLiftPos);
+        liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftLeft.setPower(max_liftPower);
-        liftRight.setPower(0);
+        liftRight.setPower(max_liftPower);
     }
 
     public void StopAndReturnLift()
@@ -128,6 +123,7 @@ public class MotorControl
 
         // Determine the closest limit
         int targetPosition = (distanceToMin < distanceToMax) ? (minLiftPos + 20) : (maxLiftPos - 20);
+        targetLiftPos = targetPosition;
 
         // Move the lift to the closest limit
         liftLeft.setTargetPosition(targetPosition);
@@ -154,16 +150,22 @@ public class MotorControl
         {
             case up:
                 liftPower = 1;
+                targetLiftPos += 10;
                 break;
             case down:
                 liftPower = -1;
+                targetLiftPos -= 10;
                 break;
         }
 
-        liftLeft.setPower(liftPower * LIFT_SPEED * 0.9);
+        //liftLeft.setTargetPosition(targetLiftPos);
+        //liftRight.setTargetPosition(targetLiftPos);
+        //liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftLeft.setPower(liftPower * LIFT_SPEED * 0.87);
         liftRight.setPower(liftPower * LIFT_SPEED);
 
-        currentLiftPos = liftLeft.getCurrentPosition();
+        targetLiftPos = liftLeft.getCurrentPosition();
     }
 
     // This method is used to move the arm

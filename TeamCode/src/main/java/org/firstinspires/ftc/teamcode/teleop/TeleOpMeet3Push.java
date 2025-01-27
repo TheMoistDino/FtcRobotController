@@ -130,14 +130,14 @@ public class TeleOpMeet3Push extends LinearOpMode
             if(currentGamepad1.dpad_up
                     && !previousGamepad1.dpad_up)
             {
-                //servoControl.SlidesPreset(ServoControl.SlidesPosition.max);
-                servoControl.SlidesControl(ServoControl.SlidesDirection.out);
+                servoControl.SlidesPreset(ServoControl.SlidesPosition.max);
+                //servoControl.SlidesControl(ServoControl.SlidesDirection.out);
             }
             if(currentGamepad1.dpad_down
                     && !previousGamepad1.dpad_down)
             {
-                //servoControl.SlidesPreset(ServoControl.SlidesPosition.zero);
-                servoControl.SlidesControl(ServoControl.SlidesDirection.in);
+                servoControl.SlidesPreset(ServoControl.SlidesPosition.zero);
+                //servoControl.SlidesControl(ServoControl.SlidesDirection.in);
             }
             if(currentGamepad1.dpad_right && !previousGamepad1.dpad_right)
             {

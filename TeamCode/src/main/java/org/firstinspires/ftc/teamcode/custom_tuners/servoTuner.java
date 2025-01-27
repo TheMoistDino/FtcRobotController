@@ -11,26 +11,26 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 @Config
 @TeleOp(name = "Servo Tuner", group = "Test")
 public class servoTuner extends OpMode {
-    public static double target_roll = 0.0;
+    public static double target_clawIntake = 0.0;
 
-    ServoImplEx roll;
+    ServoImplEx clawOuttake;
 
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        roll = hardwareMap.get(ServoImplEx.class, "roll");
+        clawOuttake = hardwareMap.get(ServoImplEx.class, "clawIntake");
     
-        roll.setPwmRange(new PwmControl.PwmRange(500,2500));
+        clawOuttake.setPwmRange(new PwmControl.PwmRange(500,2500));
     }
 
     @Override
     public void loop() {
         // Sets servo position
-        roll.setPosition(target_roll);
+        clawOuttake.setPosition(target_clawIntake);
 
         // Adds data to the telemetry/driver hub
-        telemetry.addData("target_roll", target_roll);
+        telemetry.addData("target_clawIntake", target_clawIntake);
         telemetry.update();
     }
 }
