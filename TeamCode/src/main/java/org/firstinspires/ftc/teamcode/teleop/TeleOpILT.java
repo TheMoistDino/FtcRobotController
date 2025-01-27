@@ -1,17 +1,15 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.control.HolonomicDrive;
 import org.firstinspires.ftc.teamcode.control.MotorControl;
 import org.firstinspires.ftc.teamcode.control.ServoControl;
 
-@Disabled
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Meet 3 TeleOp", group = "TeleOp")
-public class TeleOpMeet3 extends LinearOpMode
+@TeleOp(name = "ILT TeleOp", group = "TeleOp")
+public class TeleOpILT extends LinearOpMode
 {
     // Variables for Method Calling
     HolonomicDrive holonomicDrive;
@@ -84,7 +82,7 @@ public class TeleOpMeet3 extends LinearOpMode
             currentGamepad2.copy(gamepad2);
 
             // For Holonomic Drive
-                // Call the appropriate driving method based on the current mode
+            // Call the appropriate driving method based on the current mode
             if (isFieldOriented)
             {
                 // Call field-oriented driving method
@@ -103,6 +101,24 @@ public class TeleOpMeet3 extends LinearOpMode
             //tankDrive.ActiveDrive(gamepad1.left_stick_y, gamepad1.right_stick_y, telemetry);
             //////////////////////
 
+            // Toggle the driving mode
+            if(currentGamepad1.start && !previousGamepad1.start)
+            {
+                isFieldOriented = !isFieldOriented;
+            }
+
+            // Button to slow driving
+            if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper)
+            {
+                driveSlow = !driveSlow;
+            }
+
+            // Button to slow lift
+            if(currentGamepad2.start && !previousGamepad2.start)
+            {
+                liftSlow = !liftSlow;
+            }
+
             // Button to control the claw servo
             if(currentGamepad2.left_bumper && !previousGamepad2.left_bumper)
             {
@@ -114,6 +130,25 @@ public class TeleOpMeet3 extends LinearOpMode
             {
                 servoControl.GrabOuttake();
             }
+
+
+            if(currentGamepad1.dpad_up
+                    && !previousGamepad1.dpad_up)
+            {
+                servoControl.SlidesPreset(ServoControl.SlidesPosition.max);
+                //servoControl.SlidesControl(ServoControl.SlidesDirection.out);
+            }
+            if(currentGamepad1.dpad_down
+                    && !previousGamepad1.dpad_down)
+            {
+                servoControl.SlidesPreset(ServoControl.SlidesPosition.zero);
+                //servoControl.SlidesControl(ServoControl.SlidesDirection.in);
+            }
+            if(currentGamepad1.dpad_right && !previousGamepad1.dpad_right)
+            {
+                servoControl.PitchControl();
+            }
+
 
 
             // Determine the desired lift direction based on trigger input
@@ -129,7 +164,6 @@ public class TeleOpMeet3 extends LinearOpMode
             {
                 motorControl.LockLift(); // Brake lift when no direction is specified
             }
-
 
             // If the lift is beyond the set min or max positions, return the lift to the nearest limit
             if ((motorControl.currentLiftPos < motorControl.minLiftPos || motorControl.currentLiftPos > motorControl.maxLiftPos) && (!liftDebug))
@@ -147,60 +181,19 @@ public class TeleOpMeet3 extends LinearOpMode
             {
                 motorControl.ArmControl(MotorControl.ArmDirection.backward, ARM_SPEED_MULTIPLIER);
             }
-            // Buttons to setup arm to enter submersible
             else if((!gamepad2.dpad_up) && (!gamepad2.dpad_down))
             {
                 motorControl.ArmControl(MotorControl.ArmDirection.setup, ARM_SPEED_MULTIPLIER);
             }
 
-
-            if(currentGamepad1.start && !previousGamepad1.start)
-            {
-                // Toggle the driving mode
-                isFieldOriented = !isFieldOriented;
-            }
-
-            if(currentGamepad2.b && !previousGamepad2.b)
-            {
-                // Toggle liftDebug
-                liftDebug = !liftDebug;
-            }
-
-            if(currentGamepad2.back && !previousGamepad2.back)
-            {
-                // Reset lift position
-                motorControl.liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                motorControl.liftLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            }
-
-            // Button to slow driving
-            if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper)
-            {
-                driveSlow = !driveSlow;
-            }
-
-            // Button to slow lift
-            if(currentGamepad2.start && !previousGamepad2.start)
-            {
-                liftSlow = !liftSlow;
-            }
-
-            ///// Presets
             if(currentGamepad2.dpad_right && !previousGamepad2.dpad_right)
             {
-                motorControl.LiftToPosition(MotorControl.LiftHeight.high_basket, 4.5);
+                servoControl.RollControl(ServoControl.RollDirection.right);
             }
-
             if(currentGamepad2.dpad_left && !previousGamepad2.dpad_left)
             {
-                motorControl.LiftToPosition(MotorControl.LiftHeight.zero, 4.5);
+                servoControl.RollControl(ServoControl.RollDirection.left);
             }
-
-            // Button to slow arm
-            /*if(currentGamepad2.a && !previousGamepad2.a)
-            {
-                armSlow = !armSlow;
-            }*/
 
             // Toggle to slow down driving
             DRIVETRAIN_SPEED_MULTIPLIER = driveSlow ? 0.4 : 0.8;

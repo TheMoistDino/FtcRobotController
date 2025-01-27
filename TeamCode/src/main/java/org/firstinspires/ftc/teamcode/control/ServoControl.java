@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.control;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -65,8 +66,14 @@ public class ServoControl
         ServoControl.pitch = hardwareMap.get(ServoImplEx.class, pitchName);
         ServoControl.roll = hardwareMap.get(ServoImplEx.class, rollName);
 
-        // Increase max range of slide servo
-        // slide.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        // Increase max range of the servos
+        clawIntake.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        clawOuttake.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        slideLeft.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        slideRight.setPwmRange(new PwmControl.PwmRange(500, 2500));
+
+        pitch.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        roll.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
         // Instantiate Telemetry
         ServoControl.telemetry = telemetry;

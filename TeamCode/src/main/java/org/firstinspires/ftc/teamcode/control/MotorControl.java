@@ -145,6 +145,7 @@ public class MotorControl
     public void MoveLift(LiftDirection liftDirection, double LIFT_SPEED)
     {
         liftLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         switch (liftDirection)
         {
